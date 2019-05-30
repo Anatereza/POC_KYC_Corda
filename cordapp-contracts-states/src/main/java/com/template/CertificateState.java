@@ -33,12 +33,11 @@ public  class CertificateState implements ContractState, QueryableState {
     private final boolean Maintien;
     private final Party Initiator;
     private final String Profil;
-    private final ArrayList<Integer> Documents;
+    private final ArrayList<String> Documents;
     private final String Description;
     private final String DateCreation;
     private final String DateProchaineCert;
     private final int TempsValid;
-    private ArrayList<Integer> IdAbonnements;
     private Party Other1;
     private Party Other2;
 
@@ -54,11 +53,10 @@ public  class CertificateState implements ContractState, QueryableState {
      * @param DateCreation the timestamp
      * @param DateProchaineCert the expiration date
      * @param TempsValid the validation period
-     * @param IdAbonnements the list of abonnements
      */
 
 
-    public CertificateState(int Cert, int Client, String Status, Boolean Maintien, Party Initiator, String Profil, ArrayList<Integer> Documents, String Description, String DateCreation, String DateProchaineCert, int TempsValid, ArrayList<Integer> IdAbonnements, Party other1,
+    public CertificateState(int Cert, int Client, String Status, Boolean Maintien, Party Initiator, String Profil, ArrayList<String> Documents, String Description, String DateCreation, String DateProchaineCert, int TempsValid, Party other1,
                             Party other2) {
 
         this.Cert = Cert;
@@ -72,7 +70,6 @@ public  class CertificateState implements ContractState, QueryableState {
         this.DateCreation = DateCreation;
         this.DateProchaineCert = DateProchaineCert;
         this.TempsValid = TempsValid;
-        this.IdAbonnements = IdAbonnements;
         this.Other1 = other1;
         this.Other2 = other2;
 
@@ -104,14 +101,14 @@ public  class CertificateState implements ContractState, QueryableState {
     public String getProfil() {
         return Profil;
     }
-    public ArrayList<Integer> getDocuments() {        return Documents;    }
+    public ArrayList<String> getDocuments() {        return Documents;    }
     public String getDescription() {
         return Description;
     }
     public String getDateCreation() {        return DateCreation;    }
     public String getDateProchaineCert() {        return DateProchaineCert;    }
     public int getTempsValid() {        return TempsValid;    }
-    public ArrayList<Integer> getIdAbonnements() {        return IdAbonnements;    }
+
 
 
     public Party getOther1() {

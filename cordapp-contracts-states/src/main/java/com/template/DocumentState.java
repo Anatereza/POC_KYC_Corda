@@ -26,6 +26,7 @@ public  class DocumentState implements ContractState, QueryableState {
     private final String Status;
     private final String DateA;
     private final String DateE;
+    private final String DateMAJ;
     private  Party Other1;
     private  Party Other2;
 
@@ -39,11 +40,12 @@ public  class DocumentState implements ContractState, QueryableState {
      * @param Status the status
      * @param DateA the timestamp
      * @param DateE the expiration date
+     * @param DateMAJ the MAJ date
      */
 
 
     public DocumentState(int Doc, int Client, Party Initiator, Party other1,
-                         Party other2, String Status, String NomDoc, String DateA, String DateE) {
+                         Party other2, String Status, String NomDoc, String DateA, String DateE, String DateMAJ) {
 
         this.Doc = Doc;
         this.Client = Client;
@@ -54,6 +56,7 @@ public  class DocumentState implements ContractState, QueryableState {
         this.NomDoc = NomDoc;
         this.DateA = DateA;
         this.DateE = DateE;
+        this.DateMAJ = DateMAJ;
 
     }
 
@@ -82,6 +85,8 @@ public  class DocumentState implements ContractState, QueryableState {
 
     public String getDateA() {        return DateA;    }
     public String getDateE() {        return DateE;    }
+    public String getDateMAJ() {        return DateMAJ;    }
+
 
 
     public Party getOther1() {
@@ -110,7 +115,7 @@ public  class DocumentState implements ContractState, QueryableState {
         if (schema instanceof DocumentSchemaV1) {
             return new DocumentSchemaV1.PersistentDocument(
                     this.Client,
-                    this.Doc,
+                    this.NomDoc,
                     this.Status,
                     this.DateA);
 

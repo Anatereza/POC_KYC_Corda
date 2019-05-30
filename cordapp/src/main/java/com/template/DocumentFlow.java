@@ -82,7 +82,10 @@ public class DocumentFlow extends FlowLogic<SignedTransaction> {
         final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String now = sdf.format(new Date());
 
-        DocumentState outputState = new DocumentState(doc, client, getOurIdentity(), other2, other3, status, nomdoc, now, expire);
+        //id unique du document = nom du doc + timestamp
+        //String idnomdoc = nomdoc + Integer.parseInt(now);
+
+        DocumentState outputState = new DocumentState(doc, client, getOurIdentity(), other2, other3, status, nomdoc, now, expire, null);
 
 
         if(getOurIdentity().equals(other2)){
@@ -90,7 +93,7 @@ public class DocumentFlow extends FlowLogic<SignedTransaction> {
             outputState.setOther2(other3);
         }
 
-        else   if(getOurIdentity().equals(other3)){
+        else if(getOurIdentity().equals(other3)){
             outputState.setOther1(other1);
             outputState.setOther2(other2);
         }

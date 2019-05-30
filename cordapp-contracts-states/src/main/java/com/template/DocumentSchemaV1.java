@@ -23,23 +23,23 @@ public class DocumentSchemaV1 extends MappedSchema {
     @Table(name = "document_states")
     public static class PersistentDocument extends PersistentState {
         @Column(name = "client") private final Integer Client;
-        @Column(name = "doc") private final Integer Doc;
+        @Column(name = "nom_doc") private final String NomDoc;
         @Column(name = "status") private final String Status;
-        @Column(name = "date_expiration") private final String DateA;
+        @Column(name = "date_ajout") private final String DateA;
 
 
-        public PersistentDocument(Integer client, Integer doc, String status, String dateE) {
+        public PersistentDocument(Integer client, String nomdoc, String status, String dateA) {
             this.Client = client;
-            this.Doc = doc;
+            this.NomDoc = nomdoc;
             this.Status = status;
-            this.DateA = dateE;
+            this.DateA = dateA;
 
         }
 
         // Default constructor required by hibernate.
         public PersistentDocument() {
             this.Client = 0;
-            this.Doc = null;
+            this.NomDoc = null;
             this.Status = null;
             this.DateA = null;
 
@@ -49,15 +49,15 @@ public class DocumentSchemaV1 extends MappedSchema {
             return Client;
         }
 
-        public Integer getDoc() {
-            return Doc;
+        public String getNomDoc() {
+            return NomDoc;
         }
 
         public String getStatus() {
             return Status;
         }
 
-        public String getDateE() {
+        public String getDateA() {
             return DateA;
         }
 

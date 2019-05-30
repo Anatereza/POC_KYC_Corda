@@ -24,15 +24,15 @@ public class DocumentSchemaV1 extends MappedSchema {
     public static class PersistentDocument extends PersistentState {
         @Column(name = "client") private final Integer Client;
         @Column(name = "doc") private final Integer Doc;
-        @Column(name = "status") private final Boolean Status;
-        @Column(name = "date_expiration") private final String DateE;
+        @Column(name = "status") private final String Status;
+        @Column(name = "date_expiration") private final String DateA;
 
 
-        public PersistentDocument(Integer client, Integer doc, Boolean status, String dateE) {
+        public PersistentDocument(Integer client, Integer doc, String status, String dateE) {
             this.Client = client;
             this.Doc = doc;
             this.Status = status;
-            this.DateE = dateE;
+            this.DateA = dateE;
 
         }
 
@@ -41,7 +41,7 @@ public class DocumentSchemaV1 extends MappedSchema {
             this.Client = 0;
             this.Doc = null;
             this.Status = null;
-            this.DateE = null;
+            this.DateA = null;
 
         }
 
@@ -53,12 +53,12 @@ public class DocumentSchemaV1 extends MappedSchema {
             return Doc;
         }
 
-        public Boolean getStatus() {
+        public String getStatus() {
             return Status;
         }
 
         public String getDateE() {
-            return DateE;
+            return DateA;
         }
 
 

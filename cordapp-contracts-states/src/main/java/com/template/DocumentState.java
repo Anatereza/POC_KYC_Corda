@@ -23,8 +23,7 @@ public  class DocumentState implements ContractState, QueryableState {
     private final int Client;
     private final Party Initiator;
     private final String NomDoc;
-    private final int DocNum;
-    private final boolean Status;
+    private final String Status;
     private final String DateA;
     private final String DateE;
     private  Party Other1;
@@ -33,11 +32,10 @@ public  class DocumentState implements ContractState, QueryableState {
 
 
     /**
-     * @param Doc the Doc id
+     * @param Doc the Doc unique id
      * @param Client the client id
      * @param Initiator the creator
      * @param NomDoc the Doc name
-     * @param DocNum the Doc binary
      * @param Status the status
      * @param DateA the timestamp
      * @param DateE the expiration date
@@ -45,7 +43,7 @@ public  class DocumentState implements ContractState, QueryableState {
 
 
     public DocumentState(int Doc, int Client, Party Initiator, Party other1,
-                         Party other2, boolean Status, String NomDoc, int DocNum, String DateA, String DateE) {
+                         Party other2, String Status, String NomDoc, String DateA, String DateE) {
 
         this.Doc = Doc;
         this.Client = Client;
@@ -54,7 +52,6 @@ public  class DocumentState implements ContractState, QueryableState {
         this.Other2 = other2;
         this.Status = Status;
         this.NomDoc = NomDoc;
-        this.DocNum = DocNum;
         this.DateA = DateA;
         this.DateE = DateE;
 
@@ -76,15 +73,13 @@ public  class DocumentState implements ContractState, QueryableState {
     public Party getInitiator() {
         return Initiator;
     }
-    public boolean getStatus() {
+    public String getStatus() {
         return Status;
     }
     public String getNomDoc() {
         return NomDoc;
     }
-    public int getDocNum() {
-        return DocNum;
-    }
+
     public String getDateA() {        return DateA;    }
     public String getDateE() {        return DateE;    }
 
@@ -117,7 +112,7 @@ public  class DocumentState implements ContractState, QueryableState {
                     this.Client,
                     this.Doc,
                     this.Status,
-                    this.DateE);
+                    this.DateA);
 
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");

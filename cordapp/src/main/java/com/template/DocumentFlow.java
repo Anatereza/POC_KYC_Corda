@@ -1,3 +1,12 @@
+/*automatique
+
+package com.template;
+
+public class DocumentFlow {
+}
+
+ */
+
 package com.template;
 
 import co.paralleluniverse.fibers.Suspendable;
@@ -24,9 +33,12 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class DemandeFlow extends FlowLogic<SignedTransaction> {
+public class DocumentFlow extends FlowLogic<SignedTransaction> {
     private final Integer doc;
     private final Integer client;
+    private final String status;
+    private final String nomdoc;
+    private final String expire;
 
 
     /**
@@ -35,12 +47,13 @@ public class DemandeFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public DemandeFlow(Integer doc, Integer client) {
+    public DocumentFlow(Integer doc, Integer client, String status, String nomdoc, String expire) {
 
         this.doc = doc;
         this.client = client;
-
-
+        this.status = status;
+        this.nomdoc = nomdoc;
+        this.expire = expire;
     }
 
     @Override
@@ -69,9 +82,7 @@ public class DemandeFlow extends FlowLogic<SignedTransaction> {
         final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String now = sdf.format(new Date());
 
-
-
-        DemandeState outputState = new DemandeState(doc, client, getOurIdentity(), other2, other3, false, now, null);
+        DocumentState outputState = new DocumentState(doc, client, getOurIdentity(), other2, other3, status, nomdoc, now, expire);
 
 
         if(getOurIdentity().equals(other2)){

@@ -4,6 +4,7 @@ package com.template;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.identity.AbstractParty;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.identity.Party;
@@ -16,33 +17,37 @@ import net.corda.core.schemas.QueryableState;
 public class AbonnementState implements ContractState, QueryableState {
     private final int Cert;
     private  Party Applicant;
-    private final String Notification;
+    private final ArrayList<ArrayList<String>> Notifications;
     private final Boolean Status;
 
     /**
      * @param Cert the certiicate id
      * @param Applicant the applicant
-     * @param Notification the certificate notification
+     * @param Notifications the certificate notifications
      * @param Status the abonnement status
      *
 
      */
 
 
-    public AbonnementState(int Cert, Party Applicant, String Notification, Boolean Status) {
+    public AbonnementState(int Cert, Party Applicant,  ArrayList<ArrayList<String>> Notifications, Boolean Status) {
 
         this.Cert = Cert;
         this.Applicant = Applicant;
-        this.Notification = Notification;
+        this.Notifications = Notifications;
         this.Status = Status;
 
     }
 
+
+    public void setNotifications(ArrayList<String> notification) {
+        Notifications.add(notification);
+    }
     public int getCert() {
         return Cert;
     }
     public Party getApplicant() { return Applicant; }
-    public String getNotification() {        return Notification;    }
+    public  ArrayList<ArrayList<String>> getNotifications() {        return Notifications;    }
     public Boolean getStatus(){ return Status;}
 
 

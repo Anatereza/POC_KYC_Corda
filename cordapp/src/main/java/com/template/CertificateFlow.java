@@ -127,10 +127,8 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);
         List<StateAndRef<DocumentState>> documentInputStates = result.getStates();
 
-        // end test
 
-        CommandData cmdType = new TemplateContract.Commands.Action();
-        Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
+
 
         // We create a transaction builder and add the components.
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);
@@ -140,7 +138,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         //add all input state --> all document references
         for (int i=1; i<documentInputStates.size(); i++) {txBuilder.addInputState(documentInputStates.get(i));}
 
-        txBuilder.addOutputState(certificateOutputState, CertificateContract.CERTIFICATE_CONTRACT_ID).addCommand(cmd);
+        txBuilder.addOutputState(certificateOutputState, CertificateContract.CERTIFICATE_CONTRACT_ID);
 
         // We add the InitiateSell command to the transaction.
         // Note that we also specific who is required to sign the transaction.

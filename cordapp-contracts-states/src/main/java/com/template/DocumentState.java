@@ -23,7 +23,7 @@ public  class DocumentState implements ContractState, QueryableState {
     private final int Client;
     private final Party Initiator;
     private final String NomDoc;
-    private final String Status;
+    private final int Status;
     private final String DateA;
     private final String DateE;
     private final String DateMAJ;
@@ -45,7 +45,7 @@ public  class DocumentState implements ContractState, QueryableState {
 
 
     public DocumentState(int Doc, int Client, Party Initiator, Party other1,
-                         Party other2, String Status, String NomDoc, String DateA, String DateE, String DateMAJ) {
+                         Party other2, int Status, String NomDoc, String DateA, String DateE, String DateMAJ) {
 
         this.Doc = Doc;
         this.Client = Client;
@@ -76,7 +76,7 @@ public  class DocumentState implements ContractState, QueryableState {
     public Party getInitiator() {
         return Initiator;
     }
-    public String getStatus() {
+    public int getStatus() {
         return Status;
     }
     public String getNomDoc() {

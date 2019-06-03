@@ -24,11 +24,11 @@ public class DocumentSchemaV1 extends MappedSchema {
     public static class PersistentDocument extends PersistentState {
         @Column(name = "client") private final Integer Client;
         @Column(name = "nom_doc") private final String NomDoc;
-        @Column(name = "status") private final String Status;
+        @Column(name = "status") private final int Status;
         @Column(name = "date_ajout") private final String DateA;
 
 
-        public PersistentDocument(Integer client, String nomdoc, String status, String dateA) {
+        public PersistentDocument(Integer client, String nomdoc, int status, String dateA) {
             this.Client = client;
             this.NomDoc = nomdoc;
             this.Status = status;
@@ -40,7 +40,7 @@ public class DocumentSchemaV1 extends MappedSchema {
         public PersistentDocument() {
             this.Client = 0;
             this.NomDoc = null;
-            this.Status = null;
+            this.Status = 0;
             this.DateA = null;
 
         }
@@ -53,7 +53,7 @@ public class DocumentSchemaV1 extends MappedSchema {
             return NomDoc;
         }
 
-        public String getStatus() {
+        public int getStatus() {
             return Status;
         }
 

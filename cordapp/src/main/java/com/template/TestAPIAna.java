@@ -113,6 +113,38 @@ public class TestAPIAna {
 
     }
 
+    /// API consulter docs
+    @GET
+    @Path("dossier")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<DocumentState>> GetFolder(@QueryParam("client") int client) throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.ALL);
+        Field client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("Client");
+        CriteriaExpression clientIndex = Builder.equal(client1, client);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+        QueryCriteria criteria = generalCriteria.and(clientCriteria);
+        return   services.vaultQueryByCriteria(criteria,DocumentState.class).getStates();
+
+    }
+////////////
+
+    // api créer document
+    @PUT
+    @Path("CreateDoc")
+    public Response CreateDoc(@QueryParam("doc") String doc, @QueryParam("client") String client) throws InterruptedException, ExecutionException {
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(DocumentFlow.class, doc, client)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+    ///
+
 }
 
 

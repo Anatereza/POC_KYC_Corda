@@ -23,14 +23,16 @@ public class AbonnementSchemaV1 extends MappedSchema {
     public static class PersistentAbonnement extends PersistentState {
         @Column(name = "certificate") private final Integer Cert;
         @Column(name = "applicant") private final Party Applicant;
+        @Column(name = "initiator") private final Party Initiator;
         @Column(name = "status") private final boolean Status;
 
 
 
 
-        public PersistentAbonnement(Integer cert, Party applicant, boolean status) {
+        public PersistentAbonnement(Integer cert, Party applicant,Party Initiator, boolean status) {
             this.Cert = cert;
             this.Applicant = applicant;
+            this.Initiator = Initiator;
             this.Status = status;
         }
 
@@ -38,6 +40,7 @@ public class AbonnementSchemaV1 extends MappedSchema {
         public PersistentAbonnement() {
             this.Cert = 0;
             this.Applicant = null;
+            this.Initiator = null;
             this.Status = false;
         }
 
@@ -48,6 +51,10 @@ public class AbonnementSchemaV1 extends MappedSchema {
         public Party getApplicant() {
             return Applicant;
         }
+        public Party Initiator() {
+            return Initiator;
+        }
+
 
         public boolean getStatus() {
             return Status;

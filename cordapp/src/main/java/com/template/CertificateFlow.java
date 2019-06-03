@@ -109,7 +109,9 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
             e.printStackTrace();
         }
         CriteriaExpression clientIndex = Builder.equal(client1, client);
+        clientIndex = Builder.equal(client1, client);
         QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+        clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
 
 
         Field doc1 = null;
@@ -119,9 +121,11 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
             e.printStackTrace();
         }
 
+
         //chercher tous les documents presents dans la liste de creation du certificat
         CriteriaExpression docIndex = Builder.in(doc1, certificateOutputState.getDocuments());
         QueryCriteria docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
+
         QueryCriteria criteria = generalcriteria.and(clientCriteria).and(docCriteria);
 
         Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);

@@ -119,24 +119,33 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
             e.printStackTrace();
         }
 
-        //chercher tous les documents presents dans la liste de creation du certificat
-        CriteriaExpression docIndex = Builder.in(doc1, certificateOutputState.getDocuments());
-        QueryCriteria docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
-        QueryCriteria criteria = generalcriteria.and(clientCriteria).and(docCriteria);
+        //critères sur les documents : boucler sur la liste
+        QueryCriteria criteria = generalcriteria.and(clientCriteria);
+
+        CriteriaExpression docIndex;
+        QueryCriteria docCriteria;
+        for (int i=0; i < documents.size(); i++) {
+            docIndex = Builder.equal(doc1, documents.get(i));
+            docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
+            criteria.and(docCriteria);
+
+        }
 
         Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);
-        List<StateAndRef<DocumentState>> documentInputStates = result.getStates();
 
-
+        String statusDoc;
+        StateAndRef<DocumentState> inputDocState;
+        for (int i=0; i <documents.size(); i++) {
+            inputDocState = result.getStates().get(i);
+            statusDoc = inputDocState.getState().getData().getStatus();
+            if (!statusDoc.equals("valide"))
+                throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
+        }
 
 
         // We create a transaction builder and add the components.
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);
 
-        txBuilder.addInputState(documentInputStates.get(0));
-
-        //add all input state --> all document references
-        for (int i=1; i<documentInputStates.size(); i++) {txBuilder.addInputState(documentInputStates.get(i));}
 
         txBuilder.addOutputState(certificateOutputState, CertificateContract.CERTIFICATE_CONTRACT_ID);
 

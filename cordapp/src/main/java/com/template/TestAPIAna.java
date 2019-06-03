@@ -20,6 +20,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -51,20 +52,51 @@ public class TemplateApi {
 
     @PUT
     @Path("sendCertificate")
-    public Response sendCertificate(@QueryParam("doc") int doc, @QueryParam("client") int client) throws InterruptedException, ExecutionException {
-        //Créer certificat : client, list docs, profil, description, date de prochaine certification
+    public Response sendCertificate(@QueryParam("client") int client, @QueryParam("profil") String profil, @QueryParam("documents") ArrayList<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
         // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
 
         final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(DemandeFlow.class, doc, client)
+                .startTrackedFlowDynamic(CertificateFlow.class, client, profil, documents, descrip,dateProchCert)
                 .getReturnValue()
                 .get();
 
         final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
         return Response.status(CREATED).entity(msg).build();
 
+
+    }
+
+    @GET
+    @Path("RequestCertificate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<CertificateState>> GetRequestCertificate(@QueryParam("client") int param1, @QueryParam("doc") int param2) throws NoSuchFieldException {
+        QueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+        Field client1 = DemandeSchemaV1.PersistentDemande.class.getDeclaredField("Client");
+        CriteriaExpression clientIndex = Builder.equal(client1, param1);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+
+        Field doc1 = DemandeSchemaV1.PersistentDemande.class.getDeclaredField("Doc");
+        CriteriaExpression docIndex = Builder.equal(doc1, param2);
+        QueryCriteria docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
+
+        if(param1 == 0 && param2 == 0) { return   services.vaultQueryByCriteria(generalcriteria,DemandeState.class).getStates(); }
+
+
+        else if(param2 == 0) {
+            QueryCriteria criteria = generalcriteria.and(clientCriteria);
+            return   services.vaultQueryByCriteria(criteria,DemandeState.class).getStates();
+        }
+        else if(param1 == 0) {
+            QueryCriteria criteria = generalcriteria.and(docCriteria);
+            return   services.vaultQueryByCriteria(criteria,DemandeState.class).getStates();
+        }
+        else {
+            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(docCriteria);
+            return   services.vaultQueryByCriteria(criteria,DemandeState.class).getStates();
+        }
 
     }
 

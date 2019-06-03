@@ -17,6 +17,7 @@ import sun.applet.Main;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.UUID;
 
 /**
@@ -33,10 +34,10 @@ public class CertificateSchemaV1 extends MappedSchema {
         @Column(name = "certificate") private final Integer Cert;
         @Column(name = "client") private final Integer Client;
         @Column(name = "status") private final Integer Status;
-        @Column(name = "maintenance") private final Boolean Maintien;
+        @Column(name = "maintenance") private final Integer Maintien;
 
 
-        public PersistentCertificate(Integer cert, Integer client, Integer status, Boolean maintien) {
+        public PersistentCertificate(Integer cert, Integer client, Integer status, Integer maintien) {
             this.Client = client;
             this.Cert = cert;
             this.Status = status;
@@ -65,7 +66,7 @@ public class CertificateSchemaV1 extends MappedSchema {
             return Status;
         }
 
-        public Boolean getMaintien() {
+        public Integer getMaintien() {
             return Maintien;
         }
 

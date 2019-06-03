@@ -29,9 +29,10 @@ import javax.persistence.Column;
 public  class CertificateState implements ContractState, QueryableState {
     private final int Cert;
     private final int Client;
-    // trancodage statut : 0=valide, 1=expiré, 2 = revoqué
+    // trancodage statut : 0=null, 1=valide, 2=expiré, 3 = revoqué
     private final int Status;
-    private final boolean Maintien;
+    // trancodage maintien : 0=null, 1=maintenu, 2=non maintenu
+    private final int Maintien;
     private final Party Initiator;
     private final String Profil;
     private final ArrayList<String> Documents;
@@ -55,7 +56,7 @@ public  class CertificateState implements ContractState, QueryableState {
      * */
 
 
-    public CertificateState(int Cert, int Client, int Status, Boolean Maintien, Party Initiator, String Profil, ArrayList<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
+    public CertificateState(int Cert, int Client, int Status, int Maintien, Party Initiator, String Profil, ArrayList<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
                             Party other2) {
 
         this.Cert = Cert;
@@ -93,7 +94,7 @@ public  class CertificateState implements ContractState, QueryableState {
     public int getStatus() {
         return Status;
     }
-    public Boolean getMaintien() {
+    public int getMaintien() {
         return Maintien;
     }
     public String getProfil() {

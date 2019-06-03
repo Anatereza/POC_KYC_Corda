@@ -119,7 +119,23 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         ArrayList<ArrayList<String>> notifications = inputState.getState().getData().getNotifications();
         notifications.add(notification);
 
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), notifications, true);
+        //retrieve Initiator from certificat
+        QueryCriteria.VaultQueryCriteria generalcriteria1 = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+        Field cert1 = null;
+        try {
+            cert1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Cert");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        CriteriaExpression certIndex = Builder.equal(cert1, cert);
+        QueryCriteria certCriteria = new QueryCriteria.VaultCustomQueryCriteria(certIndex);
+        QueryCriteria criteria1 = generalcriteria.and(certCriteria);
+
+        Vault.Page<CertificateState> result1 = getServiceHub().getVaultService().queryBy(CertificateState.class, criteria1);
+        StateAndRef<CertificateState> state = result1.getStates().get(0);
+        Party initiator = state.getState().getData().getInitiator();
+
+        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(),initiator, notifications, true);
 
         // END of update testing
 

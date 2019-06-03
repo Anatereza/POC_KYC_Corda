@@ -106,7 +106,9 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
         // get output values
         ArrayList<ArrayList<String>> notifications = inputState.getState().getData().getNotifications();
 
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), notifications, status);
+        Party initiator = inputState.getState().getData().getInitiator();
+
+        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(),initiator, notifications, status);
 
         // END of update testing
 

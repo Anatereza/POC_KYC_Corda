@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 public class TemplateClient {
     private static final Logger logger = LoggerFactory.getLogger(TemplateClient.class);
 
-    private static void logState(StateAndRef<DemandeState> state) {
+    private static void logState(StateAndRef<DocumentState> state) {
         logger.info("{}", state.getState().getData());
     }
 
@@ -37,10 +37,10 @@ public class TemplateClient {
         final CordaRPCOps proxy = client.start("user1", "test").getProxy();
 
         // Grab all existing RequestStates and all future RequestStates.
-        final DataFeed<Vault.Page<DemandeState>, Vault.Update<DemandeState>> dataFeed = proxy.vaultTrack(DemandeState.class);
+        final DataFeed<Vault.Page<DocumentState>, Vault.Update<DocumentState>> dataFeed = proxy.vaultTrack(DocumentState.class);
 
-        final Vault.Page<DemandeState> snapshot = dataFeed.getSnapshot();
-        final Observable<Vault.Update<DemandeState>> updates = dataFeed.getUpdates();
+        final Vault.Page<DocumentState> snapshot = dataFeed.getSnapshot();
+        final Observable<Vault.Update<DocumentState>> updates = dataFeed.getUpdates();
 
         // Log the existing RequestStates and listen for new ones.
         snapshot.getStates().forEach(TemplateClient::logState);

@@ -133,12 +133,11 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
 
         Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);
 
-        String statusDoc;
+        int statusDoc;
         StateAndRef<DocumentState> inputDocState;
         for (int i=0; i <documents.size(); i++) {
-            inputDocState = result.getStates().get(i);
-            statusDoc = inputDocState.getState().getData().getStatus();
-            if (!statusDoc.equals("valide"))
+            int statut = result.getStates().get(i).getState().getData().getStatus();
+            if (statut != 1)
                 throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
         }
 

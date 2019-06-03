@@ -30,7 +30,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @StartableByRPC
 public class UpdateDocumentFlow extends FlowLogic<SignedTransaction> {
     private final Integer client;
-    private final String status;
+    private final int status;
     private final String nomdoc;
 
 
@@ -40,7 +40,7 @@ public class UpdateDocumentFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public UpdateDocumentFlow(Integer client, String status, String nomdoc) {
+    public UpdateDocumentFlow(Integer client, int status, String nomdoc) {
         this.client = client;
         this.status = status;
         this.nomdoc = nomdoc;

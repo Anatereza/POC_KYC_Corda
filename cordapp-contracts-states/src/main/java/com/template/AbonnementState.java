@@ -17,12 +17,14 @@ import net.corda.core.schemas.QueryableState;
 public class AbonnementState implements ContractState, QueryableState {
     private final int Cert;
     private  Party Applicant;
+    private Party Initiator;
     private final ArrayList<ArrayList<String>> Notifications;
     private final Boolean Status;
 
     /**
      * @param Cert the certiicate id
      * @param Applicant the applicant
+     * @param Initiator the Initiator
      * @param Notifications the certificate notifications
      * @param Status the abonnement status
      *
@@ -30,10 +32,11 @@ public class AbonnementState implements ContractState, QueryableState {
      */
 
 
-    public AbonnementState(int Cert, Party Applicant,  ArrayList<ArrayList<String>> Notifications, Boolean Status) {
+    public AbonnementState(int Cert, Party Applicant, Party Initiator,  ArrayList<ArrayList<String>> Notifications, Boolean Status) {
 
         this.Cert = Cert;
         this.Applicant = Applicant;
+        this.Initiator = Initiator;
         this.Notifications = Notifications;
         this.Status = Status;
 
@@ -47,6 +50,8 @@ public class AbonnementState implements ContractState, QueryableState {
         return Cert;
     }
     public Party getApplicant() { return Applicant; }
+    public Party getInitiator() { return Initiator; }
+
     public  ArrayList<ArrayList<String>> getNotifications() {        return Notifications;    }
     public Boolean getStatus(){ return Status;}
 
@@ -71,6 +76,7 @@ public class AbonnementState implements ContractState, QueryableState {
             return new AbonnementSchemaV1.PersistentAbonnement(
                     this.Cert,
                     this.Applicant,
+                    this.Initiator,
                     this.Status);
 
         } else {

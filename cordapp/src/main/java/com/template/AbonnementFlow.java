@@ -9,10 +9,15 @@ import net.corda.core.contracts.CommandData;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
+import net.corda.core.node.services.Vault;
+import net.corda.core.node.services.vault.Builder;
+import net.corda.core.node.services.vault.CriteriaExpression;
+import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +35,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
 
 
 
+
     /**
      * The progress tracker provides checkpoints indicating the progress of the flow to observers.
      */
@@ -39,6 +45,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
     public AbonnementFlow(Integer cert) {
 
         this.cert = cert;
+
 
     }
 
@@ -60,8 +67,25 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
         final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String now = sdf.format(new Date());
 
+////// retrieve Initiator from certificat
+        QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+        Field cert1 = null;
+        try {
+            cert1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Cert");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        CriteriaExpression certIndex = Builder.equal(cert1, cert);
+        QueryCriteria certCriteria = new QueryCriteria.VaultCustomQueryCriteria(certIndex);
+        QueryCriteria criteria = generalcriteria.and(certCriteria);
 
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), null, true);
+        Vault.Page<CertificateState> result = getServiceHub().getVaultService().queryBy(CertificateState.class, criteria);
+        StateAndRef<CertificateState> state = result.getStates().get(0);
+        Party initiator = state.getState().getData().getInitiator();
+
+///// end
+
+        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, null, true);
 
 
         CommandData cmdType = new TemplateContract.Commands.Action();

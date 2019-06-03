@@ -37,7 +37,6 @@ public  class CertificateState implements ContractState, QueryableState {
     private final String Description;
     private final String DateCreation;
     private final String DateProchaineCert;
-    private final int TempsValid;
     private Party Other1;
     private Party Other2;
 
@@ -52,11 +51,10 @@ public  class CertificateState implements ContractState, QueryableState {
      * @param Description the certificate description
      * @param DateCreation the timestamp
      * @param DateProchaineCert the expiration date
-     * @param TempsValid the validation period
-     */
+     * */
 
 
-    public CertificateState(int Cert, int Client, String Status, Boolean Maintien, Party Initiator, String Profil, ArrayList<String> Documents, String Description, String DateCreation, String DateProchaineCert, int TempsValid, Party other1,
+    public CertificateState(int Cert, int Client, String Status, Boolean Maintien, Party Initiator, String Profil, ArrayList<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
                             Party other2) {
 
         this.Cert = Cert;
@@ -69,7 +67,6 @@ public  class CertificateState implements ContractState, QueryableState {
         this.Description = Description;
         this.DateCreation = DateCreation;
         this.DateProchaineCert = DateProchaineCert;
-        this.TempsValid = TempsValid;
         this.Other1 = other1;
         this.Other2 = other2;
 
@@ -107,7 +104,6 @@ public  class CertificateState implements ContractState, QueryableState {
     }
     public String getDateCreation() {        return DateCreation;    }
     public String getDateProchaineCert() {        return DateProchaineCert;    }
-    public int getTempsValid() {        return TempsValid;    }
 
 
 

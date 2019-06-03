@@ -39,7 +39,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ArrayList<String> documents;
     private final String description;
     private final String dateProchaineCert;
-    private final Integer tempsValid;
+
 
 
     /**
@@ -48,14 +48,14 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlow(Integer client, String profil, ArrayList<String> documents, String description, String dateProchaineCert, Integer tempsValid) {
+    public CertificateFlow(Integer client, String profil, ArrayList<String> documents, String description, String dateProchaineCert) {
 
         this.client = client;
         this.profil = profil;
         this.documents = documents;
         this.description = description;
         this.dateProchaineCert = dateProchaineCert;
-        this.tempsValid = tempsValid;
+
     }
 
     @Override
@@ -87,7 +87,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         int idcert = client + Integer.parseInt(now);
 
 
-        CertificateState certificateOutputState = new CertificateState(idcert, client, "valide", true, getOurIdentity(), profil, documents, description, now, dateProchaineCert, tempsValid, other2, other3);
+        CertificateState certificateOutputState = new CertificateState(idcert, client, "valide", true, getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
 
 
         if(getOurIdentity().equals(other2)){

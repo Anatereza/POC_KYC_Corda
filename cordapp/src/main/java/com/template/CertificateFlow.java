@@ -87,7 +87,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         int idcert = client + Integer.parseInt(now);
 
 
-        CertificateState certificateOutputState = new CertificateState(idcert, client, "valide", true, getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
+        CertificateState certificateOutputState = new CertificateState(idcert, client, 0, true, getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
 
 
         if(getOurIdentity().equals(other2)){

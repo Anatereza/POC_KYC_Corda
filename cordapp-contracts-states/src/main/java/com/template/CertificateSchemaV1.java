@@ -32,11 +32,11 @@ public class CertificateSchemaV1 extends MappedSchema {
     public static class PersistentCertificate extends PersistentState {
         @Column(name = "certificate") private final Integer Cert;
         @Column(name = "client") private final Integer Client;
-        @Column(name = "status") private final String Status;
+        @Column(name = "status") private final Integer Status;
         @Column(name = "maintenance") private final Boolean Maintien;
 
 
-        public PersistentCertificate(Integer cert, Integer client, String status, Boolean maintien) {
+        public PersistentCertificate(Integer cert, Integer client, Integer status, Boolean maintien) {
             this.Client = client;
             this.Cert = cert;
             this.Status = status;
@@ -61,7 +61,7 @@ public class CertificateSchemaV1 extends MappedSchema {
             return Cert;
         }
 
-        public String getStatus() {
+        public Integer getStatus() {
             return Status;
         }
 

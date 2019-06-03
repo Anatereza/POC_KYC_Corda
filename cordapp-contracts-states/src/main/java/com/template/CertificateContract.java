@@ -35,6 +35,7 @@ public class CertificateContract implements Contract {
         CommandWithParties<Commands> command = requireSingleCommand(tx.getCommands(), Commands.class);
         if (command.getValue() instanceof Commands.Certificat) {
             // Input checks - contract shape rules
+            if (tx.getInputStates().size() != 0) throw new IllegalArgumentException("Certificate contract should have no input.");
             if (tx.getOutputStates().size() != 1) throw new IllegalArgumentException("Certificate contract should have one output.");
             if (tx.getCommands().size() != 1) throw new IllegalArgumentException("Certificate contract should have one command.");
             if (tx.outputsOfType(CertificateState.class).size() != 1) throw new IllegalArgumentException("Certificate contract output should be CertificateState");

@@ -43,15 +43,7 @@ public class CertificateContract implements Contract {
             final CertificateState certificateStateOutput = tx.outputsOfType(CertificateState.class).get(0);
 
             // Instance of ContractState object to hold data from user
-            if (certificateStateOutput.getDocuments().size() != 0) throw new IllegalArgumentException("Certificate contract should have at least 1 document.");
-            if (certificateStateOutput.getDocuments().size() == tx.inputsOfType(DocumentState.class).size()) throw new IllegalArgumentException("Certificate contract should have # input == to == documents.");
-
-
-            for (int i=0; i <tx.inputsOfType(DocumentState.class).size(); i++) {
-                DocumentState documentStatus = tx.inputsOfType(DocumentState.class).get(i);
-                if (documentStatus.getStatus() != "valide")
-                    throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
-            }
+            if (certificateStateOutput.getDocuments().size() < 1) throw new IllegalArgumentException("Certificate contract should have at least 1 document.");
 
 
         } else

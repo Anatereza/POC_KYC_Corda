@@ -52,7 +52,7 @@ public class TemplateApi {
 
     @PUT
     @Path("sendCertificate")
-    public Response sendCertificate(@QueryParam("client") int client, @QueryParam("profil") String profil, @QueryParam("documents") ArrayList<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
+    public Response sendCertificate(@QueryParam("client") Integer client, @QueryParam("profil") String profil, @QueryParam("documents") ArrayList<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
         // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
@@ -131,10 +131,10 @@ public class TemplateApi {
     // api créer document
     @PUT
     @Path("CreateDoc")
-    public Response CreateDoc(@QueryParam("doc") String doc, @QueryParam("client") String client) throws InterruptedException, ExecutionException {
-
+    public Response CreateDoc(@QueryParam("doc") Integer doc, @QueryParam("client") Integer client, @QueryParam("status") int status, @QueryParam("nomdoc") String nomdoc, @QueryParam("expire") String expire) throws InterruptedException, ExecutionException {
+        //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
         final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(DocumentFlow.class, doc, client)
+                .startTrackedFlowDynamic(DocumentFlow.class, doc, client, status, nomdoc, expire)
                 .getReturnValue()
                 .get();
 
@@ -143,7 +143,6 @@ public class TemplateApi {
 
 
     }
-    ///
 
 }
 

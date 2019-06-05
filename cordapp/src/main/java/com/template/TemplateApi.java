@@ -69,42 +69,52 @@ public class TemplateApi {
 
     }
 
+    /// API consulter certificat
     @GET
-    @Path("RequestCertificate")
+    @Path("certificat")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetRequestCertificate0(@QueryParam("client") Integer param1, @QueryParam("statut") Integer param2)  throws NoSuchFieldException {
-        //Consulter certificat : client, avec option statut, option maintien
+    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") Integer client) throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.ALL);
+        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("client");
+        CriteriaExpression clientIndex = Builder.equal(client1, client);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+        QueryCriteria criteria = generalCriteria.and(clientCriteria);
+        return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+
+    }
+    /*@GET
+    @Path("Request")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<CertificateState>> GetRequest0(@QueryParam("client") int param1, @QueryParam("doc") int param2) throws NoSuchFieldException {
         QueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
 
-        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("client");
+        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
         CriteriaExpression clientIndex = Builder.equal(client1, param1);
         QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
 
-        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("status");
-        CriteriaExpression statusIndex = Builder.equal(status1, param2);
-        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
+        Field doc1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Doc");
+        CriteriaExpression docIndex = Builder.equal(doc1, param2);
+        QueryCriteria docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
 
-        //Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("maintenance");
-        //CriteriaExpression maintienIndex = Builder.equal(maintien1, param3);
-        //QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
-
-        if(param1 == 0 && param2 == 0) { return   services.vaultQueryByCriteria(generalcriteria, CertificateState.class).getStates(); }
+        if(param1 == 0 && param2 == 0) { return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates(); }
 
 
         else if(param2 == 0) {
             QueryCriteria criteria = generalcriteria.and(clientCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            return   services.vaultQueryByCriteria(criteria,DemandeState.class).getStates();
         }
         else if(param1 == 0) {
-            QueryCriteria criteria = generalcriteria.and(statusCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            QueryCriteria criteria = generalcriteria.and(docCriteria);
+            return   services.vaultQueryByCriteria(criteria,DemandeState.class).getStates();
         }
         else {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(statusCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(docCriteria);
+            return   services.vaultQueryByCriteria(criteria,DemandeState.class).getStates();
         }
 
     }
+    */
+
     /*
     public List<StateAndRef<CertificateState>> GetRequestCertificate0(@QueryParam("client") Integer param1, @QueryParam("statut") Integer param2, @QueryParam("maintien") Integer param3)  throws NoSuchFieldException {
         //Consulter certificat : client, avec option statut, option maintien

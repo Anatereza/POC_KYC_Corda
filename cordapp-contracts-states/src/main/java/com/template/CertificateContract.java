@@ -43,9 +43,8 @@ public class CertificateContract implements Contract {
             //Certificate specific checks - our contract validation rules
             final CertificateState certificateStateOutput = tx.outputsOfType(CertificateState.class).get(0);
 
-            System.out.println("test contrat documents ko");
             // Instance of ContractState object to hold data from user
-            if (certificateStateOutput.getDocuments().size() < 1) throw new IllegalArgumentException("Certificate contract should have at least 1 document.");
+            //if (certificateStateOutput.getDocuments().size() < 1) throw new IllegalArgumentException("Certificate contract should have at least 1 document.");
 
         } else
             throw new IllegalArgumentException("Unrecognised command!");

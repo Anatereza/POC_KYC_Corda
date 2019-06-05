@@ -143,6 +143,9 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         }
         */
 
+
+        /* Supprimer le contrat pour test
+
         // We create a transaction builder and add the components.
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);
 
@@ -158,6 +161,24 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         // STEP.4.5. We check that the transaction builder we've created meets the
         // contracts of the input and output states.
         txBuilder.verify(getServiceHub());
+
+        // Signing the transaction.
+        final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);
+
+        // Finalising the transaction.
+        subFlow(new FinalityFlow(signedTx));
+
+
+        return null;
+        */
+        CommandData cmdType = new TemplateContract.Commands.Action();
+        Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
+
+        // We create a transaction builder and add the components.
+
+        final TransactionBuilder txBuilder = new TransactionBuilder(notary)
+                .addOutputState(certificateOutputState, TEMPLATE_CONTRACT_ID)
+                .addCommand(cmd);
 
         // Signing the transaction.
         final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);

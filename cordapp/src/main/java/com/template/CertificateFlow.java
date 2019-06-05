@@ -101,6 +101,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         }
 
         //test
+        /*
         QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
         Field client1 = null;
         try {
@@ -136,11 +137,11 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         int statusDoc;
         StateAndRef<DocumentState> inputDocState;
         for (int i=0; i <documents.size(); i++) {
-            int statut = result.getStates().get(i).getState().getData().getStatus();
-            if (statut != 1)
+            statusDoc = result.getStates().get(i).getState().getData().getStatus();
+            if (statusDoc != 1)
                 throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
         }
-
+        */
 
         // We create a transaction builder and add the components.
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);

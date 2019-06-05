@@ -10,10 +10,15 @@ import net.corda.core.contracts.StateAndRef;
         import net.corda.core.identity.CordaX500Name;
         import net.corda.core.identity.Party;
         import net.corda.core.messaging.CordaRPCOps;
-        import net.corda.core.transactions.SignedTransaction;
+import net.corda.core.node.services.Vault;
+import net.corda.core.node.services.vault.Builder;
+import net.corda.core.node.services.vault.CriteriaExpression;
+import net.corda.core.node.services.vault.QueryCriteria;
+import net.corda.core.transactions.SignedTransaction;
         import net.corda.core.transactions.TransactionBuilder;
         import net.corda.core.utilities.ProgressTracker;
 
+import java.lang.reflect.Field;
 import java.security.PublicKey;
 import java.security.Timestamp;
         import java.text.DateFormat;
@@ -100,11 +105,11 @@ public class CertificateTestFlow extends FlowLogic<SignedTransaction> {
 
 
         //test
-        /*
+
         QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
         Field client1 = null;
         try {
-            client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("client");
+            client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("Client");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -114,7 +119,7 @@ public class CertificateTestFlow extends FlowLogic<SignedTransaction> {
 
         Field doc1 = null;
         try {
-            doc1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("nom_doc");
+            doc1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("NomDoc");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -134,16 +139,12 @@ public class CertificateTestFlow extends FlowLogic<SignedTransaction> {
         Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);
 
         int statusDoc;
-        StateAndRef<DocumentState> inputDocState;
+        //StateAndRef<DocumentState> inputDocState;
         for (int i=0; i <documents.size(); i++) {
             statusDoc = result.getStates().get(i).getState().getData().getStatus();
             if (statusDoc != 1)
                 throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
         }
-        */
-
-
-
 
 
         // We create a transaction builder and add the components.

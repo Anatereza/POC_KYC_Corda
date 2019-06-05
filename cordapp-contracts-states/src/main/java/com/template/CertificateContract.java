@@ -41,7 +41,7 @@ public class CertificateContract implements Contract {
             if (tx.outputsOfType(CertificateState.class).size() != 1) throw new IllegalArgumentException("Certificate contract output should be CertificateState");
 
             //Certificate specific checks - our contract validation rules
-            final CertificateState certificateStateOutput = tx.outputsOfType(CertificateState.class).get(0);
+            //final CertificateState certificateStateOutput = tx.outputsOfType(CertificateState.class).get(0);
 
             // Instance of ContractState object to hold data from user
             //if (certificateStateOutput.getDocuments().size() < 1) throw new IllegalArgumentException("Certificate contract should have at least 1 document.");

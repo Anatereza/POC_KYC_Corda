@@ -22,10 +22,10 @@ public class DocumentSchemaV1 extends MappedSchema {
     @Entity
     @Table(name = "document_states")
     public static class PersistentDocument extends PersistentState {
-        @Column(name = "client") private final Integer Client;
-        @Column(name = "nom_doc") private final String NomDoc;
-        @Column(name = "status") private final int Status;
-        @Column(name = "date_ajout") private final String DateA;
+        @Column(name = "Client") private final Integer Client;
+        @Column(name = "NomDoc") private final String NomDoc;
+        @Column(name = "Status") private final int Status;
+        @Column(name = "DateA") private final String DateA;
 
 
         public PersistentDocument(Integer client, String nomdoc, int status, String dateA) {

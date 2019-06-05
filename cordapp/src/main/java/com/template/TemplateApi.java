@@ -20,6 +20,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Field;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -71,7 +72,41 @@ public class TemplateApi {
     @GET
     @Path("RequestCertificate")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetRequestCertificate(@QueryParam("client") int param1, @QueryParam("statut") int param2, @QueryParam("maintien") int param3)  throws NoSuchFieldException {
+    public List<StateAndRef<CertificateState>> GetRequestCertificate0(@QueryParam("client") Integer param1, @QueryParam("statut") Integer param2)  throws NoSuchFieldException {
+        //Consulter certificat : client, avec option statut, option maintien
+        QueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("client");
+        CriteriaExpression clientIndex = Builder.equal(client1, param1);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+
+        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("status");
+        CriteriaExpression statusIndex = Builder.equal(status1, param2);
+        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
+
+        //Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("maintenance");
+        //CriteriaExpression maintienIndex = Builder.equal(maintien1, param3);
+        //QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
+
+        if(param1 == 0 && param2 == 0) { return   services.vaultQueryByCriteria(generalcriteria, CertificateState.class).getStates(); }
+
+
+        else if(param2 == 0) {
+            QueryCriteria criteria = generalcriteria.and(clientCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+        else if(param1 == 0) {
+            QueryCriteria criteria = generalcriteria.and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+        else {
+            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+
+    }
+    /*
+    public List<StateAndRef<CertificateState>> GetRequestCertificate0(@QueryParam("client") Integer param1, @QueryParam("statut") Integer param2, @QueryParam("maintien") Integer param3)  throws NoSuchFieldException {
         //Consulter certificat : client, avec option statut, option maintien
         QueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
 
@@ -87,9 +122,9 @@ public class TemplateApi {
         CriteriaExpression maintienIndex = Builder.equal(maintien1, param3);
         QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
 
-        if(param1 == 0 && param2 == 0 && param3 == 0) { return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates(); }
+        //if(param1 == 0 && param2 == 0 && param3 == 0) { return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates(); }
 
-        else if(param3 == 0 && param2 == 0 && param1 !=0) {
+        if(param3 == 0 && param2 == 0 && param1 !=0) {
             QueryCriteria criteria = generalcriteria.and(clientCriteria);
             return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
         }
@@ -107,11 +142,12 @@ public class TemplateApi {
             return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
         }
         else {
-            throw new IllegalArgumentException("Unrecognised entries");
-
+           // throw new IllegalArgumentException("Unrecognised entries");
+            return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates();
         }
 
     }
+    */
 
     /// API consulter docs
     @GET

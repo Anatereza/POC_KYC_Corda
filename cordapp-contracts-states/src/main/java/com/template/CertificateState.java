@@ -27,7 +27,7 @@ import javax.persistence.Column;
 
 //  LinearState, QueryableState
 public  class CertificateState implements ContractState, QueryableState {
-    private final Integer Cert;
+    private final String Cert;
     private final Integer Client;
     // trancodage statut : 0=null, 1=valide, 2=expiré, 3 = revoqué
     private final Integer Status;
@@ -35,8 +35,7 @@ public  class CertificateState implements ContractState, QueryableState {
     private final Integer Maintien;
     private final Party Initiator;
     private final String Profil;
-    // test private final List<String> Documents;
-    private final String Documents;
+    private final List<String> Documents;
     private final String Description;
     private final String DateCreation;
     private final String DateProchaineCert;
@@ -57,7 +56,7 @@ public  class CertificateState implements ContractState, QueryableState {
      * */
 
 
-    public CertificateState(Integer Cert, Integer Client, Integer Status, Integer Maintien, Party Initiator, String Profil, String Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
+    public CertificateState(String Cert, Integer Client, Integer Status, Integer Maintien, Party Initiator, String Profil, List<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
                             Party other2) {
 
         this.Cert = Cert;
@@ -82,7 +81,7 @@ public  class CertificateState implements ContractState, QueryableState {
         Other2 = other2;
     }
 
-    public Integer getCert() {
+    public String getCert() {
         return Cert;
     }
     public Integer getClient() {
@@ -101,7 +100,7 @@ public  class CertificateState implements ContractState, QueryableState {
     public String getProfil() {
         return Profil;
     }
-    public String getDocuments() {        return Documents;    }
+    public List<String> getDocuments() {        return Documents;    }
     public String getDescription() {
         return Description;
     }

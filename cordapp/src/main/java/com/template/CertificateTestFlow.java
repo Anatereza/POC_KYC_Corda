@@ -3,31 +3,31 @@ package com.template;
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.contracts.StateAndRef;
-import net.corda.core.contracts.StateRef;
-import net.corda.core.flows.*;
-import net.corda.core.contracts.Command;
-import net.corda.core.contracts.CommandData;
-import net.corda.core.identity.CordaX500Name;
-import net.corda.core.identity.Party;
-import net.corda.core.messaging.CordaRPCOps;
-import net.corda.core.transactions.SignedTransaction;
-import net.corda.core.transactions.TransactionBuilder;
-import net.corda.core.utilities.ProgressTracker;
+        import net.corda.core.contracts.StateRef;
+        import net.corda.core.flows.*;
+        import net.corda.core.contracts.Command;
+        import net.corda.core.contracts.CommandData;
+        import net.corda.core.identity.CordaX500Name;
+        import net.corda.core.identity.Party;
+        import net.corda.core.messaging.CordaRPCOps;
+        import net.corda.core.transactions.SignedTransaction;
+        import net.corda.core.transactions.TransactionBuilder;
+        import net.corda.core.utilities.ProgressTracker;
 
 import java.security.PublicKey;
 import java.security.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+        import java.text.DateFormat;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
+        import java.util.List;
 
-import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
+        import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 /**
  * Define your flow here.
  */
 @InitiatingFlow
 @StartableByRPC
-public class CertificateFlow extends FlowLogic<SignedTransaction> {
+public class CertificateTestFlow extends FlowLogic<SignedTransaction> {
     private final Integer client;
     private final String profil;
     private final List<String> documents;
@@ -41,7 +41,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlow(Integer client, String profil, List<String> documents, String description, String dateProchaineCert) {
+    public CertificateTestFlow(Integer client, String profil, List<String> documents, String description, String dateProchaineCert) {
 
         this.client = client;
         this.profil = profil;

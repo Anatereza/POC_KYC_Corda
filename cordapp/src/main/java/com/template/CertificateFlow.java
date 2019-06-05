@@ -36,7 +36,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final Integer client;
     private final String profil;
-    private final List<String> documents;
+    private final String documents;
     private final String description;
     private final String dateProchaineCert;
 
@@ -48,7 +48,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlow(Integer client, String profil, List<String> documents, String description, String dateProchaineCert) {
+    public CertificateFlow(Integer client, String profil, String documents, String description, String dateProchaineCert) {
 
         this.client = client;
         this.profil = profil;
@@ -79,7 +79,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         Party other2 = getServiceHub().getNetworkMapCache().getPeerByLegalName(OtherX2);
         Party other3 = getServiceHub().getNetworkMapCache().getPeerByLegalName(OtherX3);
 
-               // We create the transaction components.
+        // We create the transaction components.
         final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String now = sdf.format(new Date());
 

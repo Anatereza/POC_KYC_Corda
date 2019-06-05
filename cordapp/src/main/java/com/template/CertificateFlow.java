@@ -36,7 +36,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final Integer client;
     private final String profil;
-    private final ArrayList<String> documents;
+    private final List<String> documents;
     private final String description;
     private final String dateProchaineCert;
 
@@ -48,7 +48,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlow(Integer client, String profil, ArrayList<String> documents, String description, String dateProchaineCert) {
+    public CertificateFlow(Integer client, String profil, List<String> documents, String description, String dateProchaineCert) {
 
         this.client = client;
         this.profil = profil;

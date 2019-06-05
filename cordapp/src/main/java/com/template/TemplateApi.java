@@ -52,13 +52,13 @@ public class TemplateApi {
 
     @PUT
     @Path("sendCertificate")
-    public Response sendCertificate(@QueryParam("client") Integer client, @QueryParam("profil") String profil, @QueryParam("documents") ArrayList<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
+    public Response sendCertificate(@QueryParam("client") Integer client, @QueryParam("profil") String profil, @QueryParam("documents") List<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
         // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
 
         final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(CertificateFlow.class, client, profil, documents, descrip,dateProchCert)
+                .startTrackedFlowDynamic(CertificateFlow.class, client, profil, documents, descrip, dateProchCert)
                 .getReturnValue()
                 .get();
 
@@ -117,7 +117,7 @@ public class TemplateApi {
     @GET
     @Path("dossier")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<DocumentState>> GetFolder(@QueryParam("client") int client) throws NoSuchFieldException {
+    public List<StateAndRef<DocumentState>> GetFolder(@QueryParam("client") Integer client) throws NoSuchFieldException {
         QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.ALL);
         Field client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("Client");
         CriteriaExpression clientIndex = Builder.equal(client1, client);

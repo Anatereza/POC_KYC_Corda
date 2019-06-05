@@ -35,7 +35,7 @@ public  class CertificateState implements ContractState, QueryableState {
     private final int Maintien;
     private final Party Initiator;
     private final String Profil;
-    private final ArrayList<String> Documents;
+    private final List<String> Documents;
     private final String Description;
     private final String DateCreation;
     private final String DateProchaineCert;
@@ -56,7 +56,7 @@ public  class CertificateState implements ContractState, QueryableState {
      * */
 
 
-    public CertificateState(int Cert, int Client, int Status, int Maintien, Party Initiator, String Profil, ArrayList<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
+    public CertificateState(int Cert, int Client, int Status, int Maintien, Party Initiator, String Profil, List<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
                             Party other2) {
 
         this.Cert = Cert;
@@ -100,7 +100,7 @@ public  class CertificateState implements ContractState, QueryableState {
     public String getProfil() {
         return Profil;
     }
-    public ArrayList<String> getDocuments() {        return Documents;    }
+    public List<String> getDocuments() {        return Documents;    }
     public String getDescription() {
         return Description;
     }

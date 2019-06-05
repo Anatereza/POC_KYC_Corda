@@ -84,7 +84,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         String now = sdf.format(new Date());
 
         //Id certificat = id client + timestamp
-        int idcert = client + Integer.parseInt(now);
+        Integer idcert = client + Integer.parseInt(now);
 
 
         CertificateState certificateOutputState = new CertificateState(idcert, client, 1, 1, getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
@@ -168,3 +168,5 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         return null;
     }
 }
+
+

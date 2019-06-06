@@ -114,6 +114,15 @@ public class TemplateApi {
 
     }
 
+    /// API consulter docs sans client
+    @GET
+    @Path("docs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<DocumentState>> GetFolder0() throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+                return   services.vaultQueryByCriteria(generalCriteria,DocumentState.class).getStates();
+    }
+
     /// API consulter docs
     @GET
     @Path("dossier")

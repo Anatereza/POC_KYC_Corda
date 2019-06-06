@@ -18,6 +18,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.print.DocFlavor;
 import java.util.UUID;
 
 /**
@@ -32,12 +33,12 @@ public class CertificateSchemaV1 extends MappedSchema {
     @Table(name = "document_states")
     public static class PersistentCertificate extends PersistentState {
         @Column(name = "certificate") private final String Cert;
-        @Column(name = "client") private final Integer Client;
+        @Column(name = "client") private final String Client;
         @Column(name = "status") private final Integer Status;
         @Column(name = "maintenance") private final Integer Maintien;
 
 
-        public PersistentCertificate(String cert, Integer client, Integer status, Integer maintien) {
+        public PersistentCertificate(String cert, String client, Integer status, Integer maintien) {
             this.Client = client;
             this.Cert = cert;
             this.Status = status;
@@ -47,14 +48,14 @@ public class CertificateSchemaV1 extends MappedSchema {
 
         // Default constructor required by hibernate.
         public PersistentCertificate() {
-            this.Client = 0;
+            this.Client = null;
             this.Cert = null;
             this.Status = null;
             this.Maintien = null;
 
         }
 
-        public Integer getClient() {
+        public String getClient() {
             return Client;
         }
 

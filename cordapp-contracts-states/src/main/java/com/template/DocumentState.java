@@ -20,7 +20,7 @@ import javax.persistence.Column;
 //  LinearState, QueryableState
 public  class DocumentState implements ContractState, QueryableState {
     private final int Doc;
-    private final int Client;
+    private final String Client;
     private final Party Initiator;
     private final String NomDoc;
     private final int Status;
@@ -44,7 +44,7 @@ public  class DocumentState implements ContractState, QueryableState {
      */
 
 
-    public DocumentState(int Doc, int Client, Party Initiator, Party other1,
+    public DocumentState(int Doc, String Client, Party Initiator, Party other1,
                          Party other2, int Status, String NomDoc, String DateA, String DateE, String DateMAJ) {
 
         this.Doc = Doc;
@@ -69,7 +69,7 @@ public  class DocumentState implements ContractState, QueryableState {
     public int getDoc() {
         return Doc;
     }
-    public int getClient() {
+    public String getClient() {
         return Client;
     }
 

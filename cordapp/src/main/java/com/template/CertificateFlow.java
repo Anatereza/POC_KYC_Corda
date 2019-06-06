@@ -28,7 +28,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @InitiatingFlow
 @StartableByRPC
 public class CertificateFlow extends FlowLogic<SignedTransaction> {
-    private final Integer client;
+    private final String client;
     private final String profil;
     private final List<String> documents;
     private final String description;
@@ -41,7 +41,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlow(Integer client, String profil, List<String> documents, String description, String dateProchaineCert) {
+    public CertificateFlow(String client, String profil, List<String> documents, String description, String dateProchaineCert) {
 
         this.client = client;
         this.profil = profil;
@@ -79,10 +79,9 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         final SimpleDateFormat sdf2 = new SimpleDateFormat("ddmmyyyyhhmmss");
         String time = sdf2.format(new Date());
 
-        //String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp());
-        //        //String test = "test0";
-        String clientid = String.valueOf(client);
-        String idcert = clientid + time;
+
+       //String clientid = String.valueOf(client);
+        String idcert = client + time;
 
 
         CertificateState certificateOutputState = new CertificateState(idcert, client, 1, 1,  getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);

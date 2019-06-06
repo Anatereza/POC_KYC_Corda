@@ -53,7 +53,7 @@ public class TemplateApi {
 
     @PUT
     @Path("sendCertificate")
-    public Response sendCertificate(@QueryParam("client") Integer client, @QueryParam("profil") String profil, @QueryParam("documents") List<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
+    public Response sendCertificate(@QueryParam("client") String client, @QueryParam("profil") String profil, @QueryParam("documents") List<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
         // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
@@ -74,26 +74,28 @@ public class TemplateApi {
     @GET
     @Path("certificat")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") Integer client, @QueryParam("status") Integer status, @QueryParam("maintien") Integer maintien) throws NoSuchFieldException {
+    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") int client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
         QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
 
         Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
         CriteriaExpression clientIndex = Builder.equal(client1, client);
         QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
-        //QueryCriteria criteria = generalCriteria.and(clientCriteria);
+
 
         Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Status");
         CriteriaExpression statusIndex = Builder.equal(status1, status);
         QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
 
         Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Maintien");
-        CriteriaExpression maintienIndex = Builder.equal(maintien1, status);
+        CriteriaExpression maintienIndex = Builder.equal(maintien1, maintien);
         QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
 
-        //QueryCriteria criteria = generalCriteria.and(clientCriteria);
+        //QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria).and(maintienCriteria);
 
-        if(status == 0 && maintien == 0) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
 
+        if(status == 0 && maintien == 0 && client == 0) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
+
+        else if(status == 0 && maintien == 0 ) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
 
         else if(maintien == 0) {
             QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria);
@@ -103,117 +105,14 @@ public class TemplateApi {
             QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria);
             return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
         }
-        else {
-            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
 
-        //QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria).and(maintienCriteria);
+        else {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria).and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();        }
 
         //return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
 
     }
-
-
-
-
-    /*
-    /// API consulter certificat
-    @GET
-    @Path("certificat")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") Integer client) throws NoSuchFieldException {
-        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.ALL);
-        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
-        CriteriaExpression clientIndex = Builder.equal(client1, client);
-        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
-        QueryCriteria criteria = generalCriteria.and(clientCriteria);
-        return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-
-    }
-    */
-    /*
-    @GET
-    @Path("certificat")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") Integer param1, @QueryParam("status") Integer param2) throws NoSuchFieldException {
-        //Consulter certificat : client, avec option statut, option maintien
-        QueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-
-        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
-        CriteriaExpression clientIndex = Builder.equal(client1, param1);
-        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
-
-        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Status");
-        CriteriaExpression statusIndex = Builder.equal(status1, param2);
-        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
-
-        if(param1 == 0 && param2 == 0) { return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates(); }
-
-
-        else if(param2 == 0) {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-        else if(param1 == 0) {
-            QueryCriteria criteria = generalcriteria.and(statusCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-        else {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(statusCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-
-    }
-    */
-
-    /*
-    @GET
-    @Path("certificat")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") Integer param1,@QueryParam("status") Integer param2, @QueryParam("status") Integer param3 ) throws NoSuchFieldException {
-        //Consulter certificat : client, avec option statut, option maintien
-        QueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-
-        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
-        CriteriaExpression clientIndex = Builder.equal(client1, param1);
-        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
-
-        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Status");
-        CriteriaExpression statusIndex = Builder.equal(status1, param2);
-        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
-
-        Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Maintien");
-        CriteriaExpression maintienIndex = Builder.equal(maintien1, param3);
-        QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
-
-        //if(param1 == 0 && param2 == 0 && param3 == 0) { return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates(); }
-
-        if(param3 == 0 && param2 == 0 && param1 !=0) {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-        else if(param3 == 0 && param2 !=0 && param1 !=0) {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(statusCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-
-        else if(param2 == 0 && param3 !=0 && param1 !=0) {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(maintienCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-        else if(param2 != 0 && param3 !=0 && param1 !=0) {
-            QueryCriteria criteria = generalcriteria.and(clientCriteria).and(statusCriteria).and(maintienCriteria);
-            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
-        }
-        else {
-           // throw new IllegalArgumentException("Unrecognised entries");
-            return   services.vaultQueryByCriteria(generalcriteria,CertificateState.class).getStates();
-        }
-
-    }
-    */
-
 
     /// API consulter docs
     @GET
@@ -233,7 +132,7 @@ public class TemplateApi {
     // api créer document
     @PUT
     @Path("CreateDoc")
-    public Response CreateDoc(@QueryParam("doc") Integer doc, @QueryParam("client") Integer client, @QueryParam("status") int status, @QueryParam("nomdoc") String nomdoc, @QueryParam("expire") String expire) throws InterruptedException, ExecutionException {
+    public Response CreateDoc(@QueryParam("doc") Integer doc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("nomdoc") String nomdoc, @QueryParam("expire") String expire) throws InterruptedException, ExecutionException {
         //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(DocumentFlow.class, doc, client, status, nomdoc, expire)

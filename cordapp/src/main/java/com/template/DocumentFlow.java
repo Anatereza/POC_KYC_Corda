@@ -35,7 +35,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @StartableByRPC
 public class DocumentFlow extends FlowLogic<SignedTransaction> {
     private final Integer doc;
-    private final Integer client;
+    private final String client;
     private final int status;
     private final String nomdoc;
     private final String expire;
@@ -47,7 +47,7 @@ public class DocumentFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire) {
+    public DocumentFlow(Integer doc, String client, int status, String nomdoc, String expire) {
 
         this.doc = doc;
         this.client = client;

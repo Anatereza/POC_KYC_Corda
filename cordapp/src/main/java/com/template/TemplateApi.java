@@ -8,6 +8,7 @@ public class TestAPIAna {
 package com.template;
 
 import net.corda.core.contracts.StateAndRef;
+import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.services.Vault;
@@ -19,6 +20,9 @@ import net.corda.core.transactions.SignedTransaction;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -154,7 +158,41 @@ public class TemplateApi {
 
     }
 
+    // api créer document2
+    @PUT
+    @Path("uploadDoc")
+    public Response uploadDoc(@QueryParam("doc") Integer doc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("expire") String expire, @QueryParam("path") String filePath) throws InterruptedException, ExecutionException, IOException {
+
+        InputStream is = new FileInputStream(filePath);
+
+        SecureHash attachmentHashValue =  services.uploadAttachment(is);
+        System.out.println("File hash"+ attachmentHashValue);
+        /** End attachment */
+
+        String nomdoc2 = attachmentHashValue.toString();
+
+        //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(DocumentFlowTest.class, doc, client, status, nomdoc2, expire, attachmentHashValue)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+
+
+
+    }
+
+
+
 }
+
+
+
+
 
 
 

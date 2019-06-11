@@ -167,7 +167,7 @@ public class TemplateApi {
     // api dowload doc sur le node et en local dans Dowloads
     @PUT
     @Path("downDoc")
-    public Response downDoc(@QueryParam("filepath") String filePath) throws InterruptedException, ExecutionException, IOException {
+    public Response downDoc(@QueryParam("filepath") String filePath, @QueryParam("nomdoc") String nomdoc) throws InterruptedException, ExecutionException, IOException {
         SecureHash h = SecureHash.parse(filePath);
 
         System.out.println("File hash" + h);
@@ -178,7 +178,7 @@ public class TemplateApi {
         FileOutputStream fout = null;
         try {
             in = new BufferedInputStream(it);
-            fout = new FileOutputStream("filename");
+            fout = new FileOutputStream(nomdoc);
 
             final byte data[] = new byte[1024];
             int count;
@@ -201,7 +201,7 @@ public class TemplateApi {
             command[0] = "cmd";
             command[1] = "/c";
             command[2] = "copy";
-            command[3] = "filename";
+            command[3] = nomdoc;
             command[4] = "C:\\Users\\anatereza.mascarenha\\Downloads";
             Runtime.getRuntime().exec (command);
 
@@ -224,6 +224,32 @@ public class TemplateApi {
 
         final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
         return Response.status(CREATED).entity(msg).build();
+
+    }
+
+
+    // api créer document KYC
+    @PUT
+    @Path("uploadDocKYC")
+    public Response uploadDocKYC(@QueryParam("path") String filePath) throws InterruptedException, ExecutionException, IOException {
+
+        InputStream is = new FileInputStream(filePath);
+
+        SecureHash attachmentHashValue =  services.uploadAttachment(is);
+        System.out.println("File hash"+ attachmentHashValue);
+        /** End attachment */
+
+        String doc = attachmentHashValue.toString();
+
+        //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(DocKYCFlow.class, doc, attachmentHashValue)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
 
     }
 

@@ -20,9 +20,7 @@ import net.corda.core.transactions.SignedTransaction;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -120,11 +118,11 @@ public class TemplateApi {
 
     /// API consulter docs sans client
     @GET
-    @Path("docs")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<DocumentState>> GetFolder0() throws NoSuchFieldException {
-        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-                return   services.vaultQueryByCriteria(generalCriteria,DocumentState.class).getStates();
+        @Path("docs")
+        @Produces(MediaType.APPLICATION_JSON)
+        public List<StateAndRef<DocumentState>> GetFolder0() throws NoSuchFieldException {
+            QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+            return   services.vaultQueryByCriteria(generalCriteria,DocumentState.class).getStates();
     }
 
     /// API consulter docs
@@ -183,6 +181,51 @@ public class TemplateApi {
 
 
 
+
+    }
+
+    // api créer document2
+    @PUT
+    @Path("downDoc")
+    public Response downDoc(@QueryParam("filepath") String filePath) throws InterruptedException, ExecutionException, IOException {
+        InputStream is = new FileInputStream(filePath);
+
+        SecureHash attachmentHashValue = services.uploadAttachment(is);
+        System.out.println("File hash" + attachmentHashValue);
+
+        InputStream it = services.openAttachment(attachmentHashValue);
+
+        BufferedInputStream in = null;
+        FileOutputStream fout = null;
+        try {
+            in = new BufferedInputStream(it);
+            fout = new FileOutputStream("filename");
+
+            final byte data[] = new byte[1024];
+            int count;
+            while ((count = in.read(data, 0, 1024)) != -1) {
+                fout.write(data, 0, count);
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (fout != null) {
+                fout.close();
+            }
+        }
+
+        /** End attachment */
+
+
+        //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(DocDownFLow.class, attachmentHashValue)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
 
     }
 

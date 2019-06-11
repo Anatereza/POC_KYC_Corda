@@ -138,23 +138,6 @@ public class TemplateApi {
 
     }
 
-
-    // api créer document - plus besoin
-    //@PUT
-    //@Path("CreateDoc")
-    /*public Response CreateDoc(@QueryParam("doc") Integer doc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("nomdoc") String nomdoc, @QueryParam("expire") String expire) throws InterruptedException, ExecutionException {
-        //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
-        final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(DocumentFlow.class, doc, client, status, nomdoc, expire)
-                .getReturnValue()
-                .get();
-
-        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
-        return Response.status(CREATED).entity(msg).build();
-
-
-    }*/
-
     // api créer document + upload de doc
     @PUT
     @Path("uploadDoc")
@@ -181,7 +164,7 @@ public class TemplateApi {
     }
 
 
-    // api créer document2
+    // api dowload doc sur le node et en local dans Dowloads
     @PUT
     @Path("downDoc")
     public Response downDoc(@QueryParam("filepath") String filePath) throws InterruptedException, ExecutionException, IOException {
@@ -211,10 +194,29 @@ public class TemplateApi {
             }
         }
 
+        //copy du doc en local
+        try
+        {
+            String[] command = new String[5];
+            command[0] = "cmd";
+            command[1] = "/c";
+            command[2] = "copy";
+            command[3] = "filename";
+            command[4] = "C:\\Users\\anatereza.mascarenha\\Downloads";
+            Runtime.getRuntime().exec (command);
+
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("HEY Buddy ! U r Doing Something Wrong ");
+            e.printStackTrace();
+        }
+
         /** End attachment */
 
 
-        //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
+
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(DocDownFlow.class, h)
                 .getReturnValue()

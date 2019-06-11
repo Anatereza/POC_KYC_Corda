@@ -109,7 +109,7 @@ public class UpdateDocumentFlow extends FlowLogic<SignedTransaction> {
         // test 2 inputs
 
         Party initiator = inputState.getState().getData().getInitiator();
-        Integer docid = inputState.getState().getData().getDoc();
+        String docid = inputState.getState().getData().getDoc();
         String dateA = inputState.getState().getData().getDateA();
         String dateE = inputState.getState().getData().getDateE();
 

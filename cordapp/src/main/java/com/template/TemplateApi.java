@@ -22,8 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.security.cert.Certificate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -53,9 +51,10 @@ public class TemplateApi {
      * Accessible at /api/template/Request.:
      */
 
+    //API créer certificat
     @PUT
-    @Path("sendCertificate")
-    public Response sendCertificate(@QueryParam("client") String client, @QueryParam("profil") String profil, @QueryParam("documents") List<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
+    @Path("createCertificate")
+    public Response createCertificate(@QueryParam("client") String client, @QueryParam("profil") String profil, @QueryParam("documents") List<String> documents, @QueryParam("description") String descrip, @QueryParam("dateProchaineCertif") String dateProchCert) throws InterruptedException, ExecutionException {
         // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
@@ -74,7 +73,7 @@ public class TemplateApi {
 
     /// API consulter certificat
     @GET
-    @Path("certificat")
+    @Path("getCertificat")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") int client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
         QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
@@ -125,7 +124,7 @@ public class TemplateApi {
             return   services.vaultQueryByCriteria(generalCriteria,DocumentState.class).getStates();
     }
 
-    /// API consulter docs
+    /// API consulter docs en fonction du client
     @GET
     @Path("dossier")
     @Produces(MediaType.APPLICATION_JSON)
@@ -138,12 +137,12 @@ public class TemplateApi {
         return   services.vaultQueryByCriteria(criteria,DocumentState.class).getStates();
 
     }
-////////////
 
-    // api créer document
-    @PUT
-    @Path("CreateDoc")
-    public Response CreateDoc(@QueryParam("doc") Integer doc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("nomdoc") String nomdoc, @QueryParam("expire") String expire) throws InterruptedException, ExecutionException {
+
+    // api créer document - plus besoin
+    //@PUT
+    //@Path("CreateDoc")
+    /*public Response CreateDoc(@QueryParam("doc") Integer doc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("nomdoc") String nomdoc, @QueryParam("expire") String expire) throws InterruptedException, ExecutionException {
         //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(DocumentFlow.class, doc, client, status, nomdoc, expire)
@@ -154,12 +153,12 @@ public class TemplateApi {
         return Response.status(CREATED).entity(msg).build();
 
 
-    }
+    }*/
 
-    // api créer document2
+    // api créer document + upload de doc
     @PUT
     @Path("uploadDoc")
-    public Response uploadDoc(@QueryParam("doc") Integer doc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("expire") String expire, @QueryParam("path") String filePath) throws InterruptedException, ExecutionException, IOException {
+    public Response uploadDoc(@QueryParam("nomdoc") String nomdoc, @QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("expire") String expire, @QueryParam("path") String filePath) throws InterruptedException, ExecutionException, IOException {
 
         InputStream is = new FileInputStream(filePath);
 
@@ -167,11 +166,11 @@ public class TemplateApi {
         System.out.println("File hash"+ attachmentHashValue);
         /** End attachment */
 
-        String nomdoc2 = attachmentHashValue.toString();
+        String doc = attachmentHashValue.toString();
 
         //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
         final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(DocumentFlowTest.class, doc, client, status, nomdoc2, expire, attachmentHashValue)
+                .startTrackedFlowDynamic(DocumentFlow.class, doc, client, status, nomdoc, expire, attachmentHashValue)
                 .getReturnValue()
                 .get();
 
@@ -179,21 +178,18 @@ public class TemplateApi {
         return Response.status(CREATED).entity(msg).build();
 
 
-
-
-
     }
+
 
     // api créer document2
     @PUT
     @Path("downDoc")
     public Response downDoc(@QueryParam("filepath") String filePath) throws InterruptedException, ExecutionException, IOException {
-        InputStream is = new FileInputStream(filePath);
+        SecureHash h = SecureHash.parse(filePath);
 
-        SecureHash attachmentHashValue = services.uploadAttachment(is);
-        System.out.println("File hash" + attachmentHashValue);
+        System.out.println("File hash" + h);
 
-        InputStream it = services.openAttachment(attachmentHashValue);
+        InputStream it = services.openAttachment(h);
 
         BufferedInputStream in = null;
         FileOutputStream fout = null;
@@ -220,7 +216,7 @@ public class TemplateApi {
 
         //DocumentFlow(Integer doc, Integer client, int status, String nomdoc, String expire)
         final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(DocDownFLow.class, attachmentHashValue)
+                .startTrackedFlowDynamic(DocDownFlow.class, h)
                 .getReturnValue()
                 .get();
 

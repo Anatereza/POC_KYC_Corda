@@ -19,7 +19,7 @@ import javax.persistence.Column;
 
 //  LinearState, QueryableState
 public  class DocumentState implements ContractState, QueryableState {
-    private final int Doc;
+    private final String Doc;
     private final String Client;
     private final Party Initiator;
     private final String NomDoc;
@@ -44,7 +44,7 @@ public  class DocumentState implements ContractState, QueryableState {
      */
 
 
-    public DocumentState(int Doc, String Client, Party Initiator, Party other1,
+    public DocumentState(String Doc, String Client, Party Initiator, Party other1,
                          Party other2, int Status, String NomDoc, String DateA, String DateE, String DateMAJ) {
 
         this.Doc = Doc;
@@ -66,7 +66,7 @@ public  class DocumentState implements ContractState, QueryableState {
     public void setOther2(Party other2) {
         Other2 = other2;
     }
-    public int getDoc() {
+    public String getDoc() {
         return Doc;
     }
     public String getClient() {
@@ -114,6 +114,7 @@ public  class DocumentState implements ContractState, QueryableState {
     @Override public PersistentState generateMappedObject(MappedSchema schema) {
         if (schema instanceof DocumentSchemaV1) {
             return new DocumentSchemaV1.PersistentDocument(
+                    this.Doc,
                     this.Client,
                     this.NomDoc,
                     this.Status,

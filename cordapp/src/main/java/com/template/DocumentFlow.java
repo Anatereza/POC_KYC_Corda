@@ -12,6 +12,7 @@ package com.template;
 import co.paralleluniverse.fibers.Suspendable;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.StateRef;
+import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.CommandData;
@@ -34,11 +35,12 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @InitiatingFlow
 @StartableByRPC
 public class DocumentFlow extends FlowLogic<SignedTransaction> {
-    private final Integer doc;
+    private final String doc;
     private final String client;
     private final int status;
     private final String nomdoc;
     private final String expire;
+    private final SecureHash docHash;
 
 
     /**
@@ -47,13 +49,14 @@ public class DocumentFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public DocumentFlow(Integer doc, String client, int status, String nomdoc, String expire) {
+    public DocumentFlow(String doc, String client, int status, String nomdoc, String expire, SecureHash docHash) {
 
         this.doc = doc;
         this.client = client;
         this.status = status;
         this.nomdoc = nomdoc;
         this.expire = expire;
+        this.docHash = docHash;
     }
 
     @Override
@@ -106,6 +109,8 @@ public class DocumentFlow extends FlowLogic<SignedTransaction> {
         final TransactionBuilder txBuilder = new TransactionBuilder(notary)
                 .addOutputState(outputState, TEMPLATE_CONTRACT_ID)
                 .addCommand(cmd);
+
+        txBuilder.addAttachment(docHash);
 
         // Signing the transaction.
         final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);

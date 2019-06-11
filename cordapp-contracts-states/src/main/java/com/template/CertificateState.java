@@ -29,6 +29,7 @@ import javax.persistence.Column;
 public  class CertificateState implements ContractState, QueryableState {
     private final String Cert;
     private final String Client;
+    private final String DocKYC;
     // trancodage statut : 0=null, 1=valide, 2=expiré, 3 = revoqué
     private final Integer Status;
     // trancodage maintien : 0=null, 1=maintenu, 2=non maintenu
@@ -45,6 +46,7 @@ public  class CertificateState implements ContractState, QueryableState {
     /**
      * @param Cert the Cert id
      * @param Client the client id
+     * @param DocKYC the client id
      * @param Status the status
      * @param Maintien the maintenance
      * @param Initiator the creator
@@ -56,11 +58,12 @@ public  class CertificateState implements ContractState, QueryableState {
      * */
 
 
-    public CertificateState(String Cert, String Client, Integer Status, Integer Maintien, Party Initiator, String Profil, List<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
+    public CertificateState(String Cert, String Client, String docKYC, Integer Status, Integer Maintien, Party Initiator, String Profil, List<String> Documents, String Description, String DateCreation, String DateProchaineCert, Party other1,
                             Party other2) {
 
         this.Cert = Cert;
         this.Client = Client;
+        this.DocKYC = docKYC;
         this.Status = Status;
         this.Maintien = Maintien;
         this.Initiator = Initiator;
@@ -86,6 +89,9 @@ public  class CertificateState implements ContractState, QueryableState {
     }
     public String getClient() {
         return Client;
+    }
+    public String getDocKYC() {
+        return DocKYC;
     }
 
     public Party getInitiator() {
@@ -136,6 +142,7 @@ public  class CertificateState implements ContractState, QueryableState {
             return new CertificateSchemaV1.PersistentCertificate(
                     this.Cert,
                     this.Client,
+                    this.DocKYC,
                     this.Status,
                     this.Maintien);
 

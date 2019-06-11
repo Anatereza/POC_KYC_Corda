@@ -10,15 +10,10 @@ import net.corda.core.contracts.CommandData;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
-import net.corda.core.node.services.Vault;
-import net.corda.core.node.services.vault.Builder;
-import net.corda.core.node.services.vault.CriteriaExpression;
-import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
-import java.lang.reflect.Field;
 import java.security.PublicKey;
 import java.security.Timestamp;
 import java.text.DateFormat;
@@ -32,7 +27,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class CertificateFlow extends FlowLogic<SignedTransaction> {
+public class CertificateFlowTest extends FlowLogic<SignedTransaction> {
     private final String client;
     private final String profil;
     private final List<String> documents;
@@ -46,7 +41,7 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlow(String client, String profil, List<String> documents, String description, String dateProchaineCert) {
+    public CertificateFlowTest(String client, String profil, List<String> documents, String description, String dateProchaineCert) {
 
         this.client = client;
         this.profil = profil;
@@ -89,36 +84,9 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
         String idcert = client + time;
 
 
-        //test avec docKYC
-        QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-        Field entite1 = null;
-        try {
-            entite1 = DocKYCSchemaV1.PersistentDocKYC.class.getDeclaredField("Entite");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-
-        Party entiteTest = getOurIdentity();
-        CriteriaExpression entiteIndex = Builder.equal(entite1, entiteTest);
-        QueryCriteria entiteCriteria = new QueryCriteria.VaultCustomQueryCriteria(entiteIndex);
-
-        QueryCriteria criteria = generalcriteria.and(entiteCriteria);
-
-
-        // *****
-        Vault.Page<DocKYCState> result = getServiceHub().getVaultService().queryBy(DocKYCState.class, criteria);
-        StateAndRef<DocKYCState> inputState = result.getStates().get(0);
-
-        StateRef ourStateRef = new StateRef(inputState.getRef().getTxhash(),0);
-        StateAndRef ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
-
-        // test  inputs
-
-        String docKYC = inputState.getState().getData().getDocKYC();
-
-
+        String docKYC = "docKYCTest";
+        //CertificateState certificateOutputState = new CertificateState(idcert, client, 1, 1,  getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
         CertificateState certificateOutputState = new CertificateState(idcert, client, docKYC, 1, 1, getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
-
 
         if(getOurIdentity().equals(other2)){
             certificateOutputState.setOther1(other1);
@@ -129,6 +97,54 @@ public class CertificateFlow extends FlowLogic<SignedTransaction> {
             certificateOutputState.setOther1(other1);
             certificateOutputState.setOther2(other2);
         }
+
+
+        //test
+        /*
+        QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+        Field client1 = null;
+        try {
+            client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("client");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        CriteriaExpression clientIndex = Builder.equal(client1, client);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+
+
+        Field doc1 = null;
+        try {
+            doc1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("nom_doc");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        //critères sur les documents : boucler sur la liste
+        QueryCriteria criteria = generalcriteria.and(clientCriteria);
+
+        CriteriaExpression docIndex;
+        QueryCriteria docCriteria;
+        for (int i=0; i < documents.size(); i++) {
+            docIndex = Builder.equal(doc1, documents.get(i));
+            docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
+            criteria.and(docCriteria);
+
+        }
+
+        Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);
+
+        int statusDoc;
+        StateAndRef<DocumentState> inputDocState;
+        for (int i=0; i <documents.size(); i++) {
+            statusDoc = result.getStates().get(i).getState().getData().getStatus();
+            if (statusDoc != 1)
+                throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
+        }
+        */
+
+
+
+
 
         // We create a transaction builder and add the components.
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);

@@ -10,10 +10,15 @@ import net.corda.core.contracts.CommandData;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
+import net.corda.core.node.services.Vault;
+import net.corda.core.node.services.vault.Builder;
+import net.corda.core.node.services.vault.CriteriaExpression;
+import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
+import java.lang.reflect.Field;
 import java.security.PublicKey;
 import java.security.Timestamp;
 import java.text.DateFormat;
@@ -27,12 +32,10 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class CertificateFlowTest extends FlowLogic<SignedTransaction> {
-    private final String client;
-    private final String profil;
-    private final List<String> documents;
-    private final String description;
-    private final String dateProchaineCert;
+public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
+    private final String cert;
+    private final Integer status;
+
 
 
     /**
@@ -41,13 +44,11 @@ public class CertificateFlowTest extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public CertificateFlowTest(String client, String profil, List<String> documents, String description, String dateProchaineCert) {
+    public StatusCertificateFlow(String cert, Integer status) {
 
-        this.client = client;
-        this.profil = profil;
-        this.documents = documents;
-        this.description = description;
-        this.dateProchaineCert = dateProchaineCert;
+        this.cert = cert;
+        this.status = status;
+
     }
 
     @Override
@@ -73,20 +74,45 @@ public class CertificateFlowTest extends FlowLogic<SignedTransaction> {
 
 
         // We create the transaction components.
-        final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        String now = sdf.format(new Date());
-
-        final SimpleDateFormat sdf2 = new SimpleDateFormat("ddmmyyyyhhmmss");
-        String time = sdf2.format(new Date());
+        //final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        //String now = sdf.format(new Date());
 
 
-        //String clientid = String.valueOf(client);
-        String idcert = client + time;
+        //récupérer le state à mettre à jour
+        QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+        Field cert1 = null;
+        try {
+            cert1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Cert");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
 
 
-        String docKYC = "docKYCTest";
-        //CertificateState certificateOutputState = new CertificateState(idcert, client, 1, 1,  getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
-        CertificateState certificateOutputState = new CertificateState(idcert, client, docKYC, 1, 1, getOurIdentity(), profil, documents, description, now, dateProchaineCert, other2, other3);
+        CriteriaExpression certIndex = Builder.equal(cert1, cert);
+        QueryCriteria certCriteria = new QueryCriteria.VaultCustomQueryCriteria(certIndex);
+
+        QueryCriteria criteria = generalcriteria.and(certCriteria);
+
+
+        // *****
+        Vault.Page<CertificateState> result = getServiceHub().getVaultService().queryBy(CertificateState.class, criteria);
+        StateAndRef<CertificateState> inputState = result.getStates().get(0);
+
+        StateRef ourStateRef = new StateRef(inputState.getRef().getTxhash(),0);
+        StateAndRef ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
+
+        // test  inputs
+        String client = inputState.getState().getData().getClient();
+        String docKYC = inputState.getState().getData().getDocKYC();
+        Integer maintien = inputState.getState().getData().getMaintien();
+        String profil = inputState.getState().getData().getProfil();
+        List<String> documents = inputState.getState().getData().getDocuments();
+        String description = inputState.getState().getData().getDescription();
+        String dateC = inputState.getState().getData().getDateCreation();
+        String dateProchaineCert = inputState.getState().getData().getDateProchaineCert();
+
+        CertificateState certificateOutputState = new CertificateState(cert, client, docKYC, status, maintien, getOurIdentity(), profil, documents, description, dateC, dateProchaineCert, other2, other3);
+
 
         if(getOurIdentity().equals(other2)){
             certificateOutputState.setOther1(other1);
@@ -98,63 +124,15 @@ public class CertificateFlowTest extends FlowLogic<SignedTransaction> {
             certificateOutputState.setOther2(other2);
         }
 
-
-        //test
-        /*
-        QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-        Field client1 = null;
-        try {
-            client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("client");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        CriteriaExpression clientIndex = Builder.equal(client1, client);
-        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
-
-
-        Field doc1 = null;
-        try {
-            doc1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("nom_doc");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-
-        //critères sur les documents : boucler sur la liste
-        QueryCriteria criteria = generalcriteria.and(clientCriteria);
-
-        CriteriaExpression docIndex;
-        QueryCriteria docCriteria;
-        for (int i=0; i < documents.size(); i++) {
-            docIndex = Builder.equal(doc1, documents.get(i));
-            docCriteria = new QueryCriteria.VaultCustomQueryCriteria(docIndex);
-            criteria.and(docCriteria);
-
-        }
-
-        Vault.Page<DocumentState> result = getServiceHub().getVaultService().queryBy(DocumentState.class, criteria);
-
-        int statusDoc;
-        StateAndRef<DocumentState> inputDocState;
-        for (int i=0; i <documents.size(); i++) {
-            statusDoc = result.getStates().get(i).getState().getData().getStatus();
-            if (statusDoc != 1)
-                throw new IllegalArgumentException("Tous les documents du certificat doivent etre valide");
-        }
-        */
-
-
-
-
-
         // We create a transaction builder and add the components.
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);
 
-
+        txBuilder.addInputState(ourStateAndRef);
         txBuilder.addOutputState(certificateOutputState, CertificateContract.CERTIFICATE_CONTRACT_ID);
 
         // We add the InitiateSell command to the transaction.
         // Note that we also specific who is required to sign the transaction.
-        CertificateContract.Commands.Certificat commandData = new CertificateContract.Commands.Certificat();
+        CertificateContract.Commands.Status commandData = new CertificateContract.Commands.Status();
         List<PublicKey> requiredSigners = ImmutableList.of(certificateOutputState.getInitiator().getOwningKey());
         txBuilder.addCommand(commandData, requiredSigners);
 

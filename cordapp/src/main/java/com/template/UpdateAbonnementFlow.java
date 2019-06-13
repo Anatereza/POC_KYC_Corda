@@ -75,21 +75,21 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
         QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
         Field certificate1 = null;
         try {
-            certificate1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("certificate");
+            certificate1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Cert");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
         CriteriaExpression certificateIndex = Builder.equal(certificate1, cert);
         QueryCriteria certificateCriteria = new QueryCriteria.VaultCustomQueryCriteria(certificateIndex);
 
-        Party monabonnement = getOurIdentity();
+
         Field identite = null;
         try {
-            identite = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("applicant");
+            identite = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Applicant");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        CriteriaExpression idIndex = Builder.equal(identite, monabonnement);
+        CriteriaExpression idIndex = Builder.equal(identite, getOurIdentity());
         QueryCriteria applicantCriteria = new QueryCriteria.VaultCustomQueryCriteria(idIndex);
 
 

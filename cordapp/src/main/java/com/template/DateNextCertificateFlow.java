@@ -32,9 +32,9 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
+public class DateNextCertificateFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
-    private final Integer status;
+    private final String dateProchaineCert;
 
 
 
@@ -44,10 +44,10 @@ public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public StatusCertificateFlow(String cert, Integer status) {
+    public DateNextCertificateFlow(String cert, String dateProchaineCert) {
 
         this.cert = cert;
-        this.status = status;
+        this.dateProchaineCert = dateProchaineCert;
 
     }
 
@@ -105,11 +105,11 @@ public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
         String client = inputState.getState().getData().getClient();
         String docKYC = inputState.getState().getData().getDocKYC();
         Integer maintien = inputState.getState().getData().getMaintien();
-        String profil = inputState.getState().getData().getProfil();
+        Integer status = inputState.getState().getData().getStatus();
         List<String> documents = inputState.getState().getData().getDocuments();
         String description = inputState.getState().getData().getDescription();
         String dateC = inputState.getState().getData().getDateCreation();
-        String dateProchaineCert = inputState.getState().getData().getDateProchaineCert();
+        String profil = inputState.getState().getData().getProfil();
 
         CertificateState certificateOutputState = new CertificateState(cert, client, docKYC, status, maintien, getOurIdentity(), profil, documents, description, dateC, dateProchaineCert, other2, other3);
 

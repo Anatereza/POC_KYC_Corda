@@ -29,9 +29,8 @@ public class CertificateContract implements Contract {
     /** Set of commands defined to execute certificate contract Or the set of abstract methods, accessed through interface. */
     public interface Commands extends CommandData {
         class Certificat implements Commands {}
-        class Status implements  Commands {}
-        class Maintenance implements  Commands {}
-        class DateProch implements  Commands {}
+        class Update implements  Commands {}
+
     }
 
 
@@ -75,18 +74,18 @@ public class CertificateContract implements Contract {
         }
 
         // Invoke Status command
-        else if (command.getValue() instanceof Commands.Status) {
+        else if ((command.getValue() instanceof Commands.Update) ) {
             // Checking the shapes of the transaction - how certificate state input and output state look like.
             if (tx.getInputStates().size() != 1)
-                throw new IllegalArgumentException("Certificate update status should have one inputs.");
+                throw new IllegalArgumentException("Certificate update status/maintenance/dateProchaineCert/profil should have one inputs.");
             if (tx.getOutputStates().size() != 1)
-                throw new IllegalArgumentException("Certificate update status should have one output.");
+                throw new IllegalArgumentException("Certificate update status/maintenance/dateProchaineCert/profil should have one output.");
             if (tx.getCommands().size() != 1)
-                throw new IllegalArgumentException("Certificate update status should have one status command.");
+                throw new IllegalArgumentException("Certificate update status/maintenance/dateProchaineCert/profil should have one status command.");
             if (tx.inputsOfType(CertificateState.class).size() != 1)
-                throw new IllegalArgumentException("Certificate update status input should be an CertificateState.");
+                throw new IllegalArgumentException("Certificate update status/maintenance/dateProchaineCert/profil input should be an CertificateState.");
             if (tx.outputsOfType(CertificateState.class).size() != 1)
-                throw new IllegalArgumentException("Certificate update status output should be an CertificateState.");
+                throw new IllegalArgumentException("Certificate update status/maintenance/dateProchaineCert/profil output should be an CertificateState.");
 
             //Vérifier que l'entité qui modifie le certificat est bien l'entité qui l'a crée
 
@@ -98,35 +97,6 @@ public class CertificateContract implements Contract {
 
 
 
-        } else if (command.getValue() instanceof Commands.Maintenance) {
-            // Checking the shapes of the transaction - how certificate state input and output state look like.
-            if (tx.getInputStates().size() != 1)
-                throw new IllegalArgumentException("Certificate update maintien should have one inputs.");
-            if (tx.getOutputStates().size() != 1)
-                throw new IllegalArgumentException("Certificate update maintien should have one output.");
-            if (tx.getCommands().size() != 1)
-                throw new IllegalArgumentException("Certificate update maintien should have one status command.");
-            if (tx.inputsOfType(CertificateState.class).size() != 1)
-                throw new IllegalArgumentException("Certificate update maintien input should be an CertificateState.");
-            if (tx.outputsOfType(CertificateState.class).size() != 1)
-                throw new IllegalArgumentException("Certificate update maintien output should be an CertificateState.");
-
-
-            //Vérifier que l'entité qui modifie le certificat est bien l'entité qui l'a crée
-
-
-        } else if (command.getValue() instanceof Commands.DateProch) {
-            // Checking the shapes of the transaction - how certificate state input and output state look like.
-            if (tx.getInputStates().size() != 1)
-                throw new IllegalArgumentException("Certificate update date prochaine certif should have one inputs.");
-            if (tx.getOutputStates().size() != 1)
-                throw new IllegalArgumentException("Certificate update date prochaine certif should have one output.");
-            if (tx.getCommands().size() != 1)
-                throw new IllegalArgumentException("Certificate update date prochaine certif should have one status command.");
-            if (tx.inputsOfType(CertificateState.class).size() != 1)
-                throw new IllegalArgumentException("Certificate update date prochaine certif input should be an CertificateState.");
-            if (tx.outputsOfType(CertificateState.class).size() != 1)
-                throw new IllegalArgumentException("Certificate update date prochaine certif output should be an CertificateState.");
 
         } else throw new IllegalArgumentException("Unrecognised command.");
     }

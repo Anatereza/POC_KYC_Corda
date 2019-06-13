@@ -254,6 +254,83 @@ public class TemplateApi {
     }
 
 
+    //update certificat APIs
+    @PUT
+    @Path("updateStatusCertificate")
+    public Response updateStatusCertificate(@QueryParam("cert") String cert, @QueryParam("status") Integer status) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(StatusCertificateFlow.class, cert, status)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+    @PUT
+    @Path("updateProfilCertificate")
+    public Response updateProfilCertificate(@QueryParam("cert") String cert, @QueryParam("profil") String profil) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(ProfilCertificateFlow.class, cert, profil)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+    @PUT
+    @Path("updateDateNextCertificate")
+    public Response updateDateNextCertificate(@QueryParam("cert") String cert, @QueryParam("date") String dateProchaineCert) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(DateNextCertificateFlow.class, cert, dateProchaineCert)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+    @PUT
+    @Path("updateMaintenanceCertificate")
+    public Response updateMaintenanceCertificate(@QueryParam("cert") String cert, @QueryParam("main") Integer maintenance) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(MaintenanceCertificateFlow.class, cert, maintenance)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+
+
+
+
 
 }
 

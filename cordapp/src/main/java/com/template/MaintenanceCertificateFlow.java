@@ -32,9 +32,9 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
+public class MaintenanceCertificateFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
-    private final Integer status;
+    private final Integer maintien;
 
 
 
@@ -44,10 +44,10 @@ public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public StatusCertificateFlow(String cert, Integer status) {
+    public MaintenanceCertificateFlow(String cert, Integer maintien) {
 
         this.cert = cert;
-        this.status = status;
+        this.maintien = maintien;
 
     }
 
@@ -104,8 +104,8 @@ public class StatusCertificateFlow extends FlowLogic<SignedTransaction> {
         // test  inputs
         String client = inputState.getState().getData().getClient();
         String docKYC = inputState.getState().getData().getDocKYC();
-        Integer maintien = inputState.getState().getData().getMaintien();
         String profil = inputState.getState().getData().getProfil();
+        Integer status = inputState.getState().getData().getStatus();
         List<String> documents = inputState.getState().getData().getDocuments();
         String description = inputState.getState().getData().getDescription();
         String dateC = inputState.getState().getData().getDateCreation();

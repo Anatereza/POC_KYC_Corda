@@ -1,5 +1,6 @@
 package com.template;
 
+import com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.identity.Party;
 import net.corda.core.schemas.MappedSchema;
@@ -21,7 +22,7 @@ public class AbonnementSchemaV1 extends MappedSchema {
     @Entity
     @Table(name = "abonnement_states")
     public static class PersistentAbonnement extends PersistentState {
-        @Column(name = "certificate") private final Integer Cert;
+        @Column(name = "certificate") private final String Cert;
         @Column(name = "applicant") private final Party Applicant;
         @Column(name = "initiator") private final Party Initiator;
         @Column(name = "status") private final boolean Status;
@@ -29,7 +30,7 @@ public class AbonnementSchemaV1 extends MappedSchema {
 
 
 
-        public PersistentAbonnement(Integer cert, Party applicant,Party Initiator, boolean status) {
+        public PersistentAbonnement(String cert, Party applicant,Party Initiator, boolean status) {
             this.Cert = cert;
             this.Applicant = applicant;
             this.Initiator = Initiator;
@@ -38,13 +39,13 @@ public class AbonnementSchemaV1 extends MappedSchema {
 
         // Default constructor required by hibernate.
         public PersistentAbonnement() {
-            this.Cert = 0;
+            this.Cert = null;
             this.Applicant = null;
             this.Initiator = null;
             this.Status = false;
         }
 
-        public Integer getCert() {
+        public String getCert() {
             return Cert;
         }
 

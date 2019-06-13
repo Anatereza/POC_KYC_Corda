@@ -38,7 +38,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @InitiatingFlow
 @StartableByRPC
 public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
-    private final Integer cert;
+    private final String cert;
     private final Boolean status;
 
 
@@ -50,7 +50,7 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public UpdateAbonnementFlow(Integer cert, Boolean status) {
+    public UpdateAbonnementFlow(String cert, Boolean status) {
         this.cert = cert;
         this.status = status;
 
@@ -104,7 +104,7 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
         StateAndRef ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
 
         // get output values
-        ArrayList<ArrayList<String>> notifications = inputState.getState().getData().getNotifications();
+        List<List<String>> notifications = inputState.getState().getData().getNotifications();
 
         Party initiator = inputState.getState().getData().getInitiator();
 

@@ -30,7 +30,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @InitiatingFlow
 @StartableByRPC
 public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
-    private final Integer cert;
+    private final String cert;
     private final String notif;
 
 
@@ -42,7 +42,7 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public NotifyAbonnementFlow(Integer cert, String notif) {
+    public NotifyAbonnementFlow(String cert, String notif) {
         this.cert = cert;
         this.notif = notif;
 
@@ -66,7 +66,8 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String now = sdf.format(new Date());
 
-        ArrayList<String> notification = new ArrayList<String>();
+
+        List<String> notification = null;
         notification.add(notif);
         notification.add(now);
 
@@ -116,7 +117,7 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         // test 2 inputs
 
-        ArrayList<ArrayList<String>> notifications = inputState.getState().getData().getNotifications();
+        List<List<String>> notifications = inputState.getState().getData().getNotifications();
         notifications.add(notification);
 
         //retrieve Initiator from certificat

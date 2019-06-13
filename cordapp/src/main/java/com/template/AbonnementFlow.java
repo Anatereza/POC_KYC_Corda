@@ -31,10 +31,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @InitiatingFlow
 @StartableByRPC
 public class AbonnementFlow extends FlowLogic<SignedTransaction> {
-    private final Integer cert;
-
-
-
+    private final String cert;
 
     /**
      * The progress tracker provides checkpoints indicating the progress of the flow to observers.
@@ -42,7 +39,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public AbonnementFlow(Integer cert) {
+    public AbonnementFlow(String cert) {
 
         this.cert = cert;
 
@@ -68,6 +65,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
         String now = sdf.format(new Date());
 
 ////// retrieve Initiator from certificat
+
         QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
         Field cert1 = null;
         try {
@@ -82,6 +80,8 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
         Vault.Page<CertificateState> result = getServiceHub().getVaultService().queryBy(CertificateState.class, criteria);
         StateAndRef<CertificateState> state = result.getStates().get(0);
         Party initiator = state.getState().getData().getInitiator();
+
+
 
 ///// end
 

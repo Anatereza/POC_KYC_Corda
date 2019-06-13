@@ -15,10 +15,10 @@ import net.corda.core.schemas.QueryableState;
 
 //  LinearState, QueryableState
 public class AbonnementState implements ContractState, QueryableState {
-    private final int Cert;
+    private final String Cert;
     private  Party Applicant;
     private Party Initiator;
-    private final ArrayList<ArrayList<String>> Notifications;
+    private final List<List<String>> Notifications;
     private final Boolean Status;
 
     /**
@@ -32,10 +32,12 @@ public class AbonnementState implements ContractState, QueryableState {
      */
 
 
-    public AbonnementState(int Cert, Party Applicant, Party Initiator,  ArrayList<ArrayList<String>> Notifications, Boolean Status) {
+    public AbonnementState(String Cert, Party Applicant, Party Initiator,  List<List<String>> Notifications, Boolean Status) {
 
         this.Cert = Cert;
+        //celui qui s'abonne
         this.Applicant = Applicant;
+        //celui qui crée le certificat
         this.Initiator = Initiator;
         this.Notifications = Notifications;
         this.Status = Status;
@@ -46,20 +48,20 @@ public class AbonnementState implements ContractState, QueryableState {
     public void setNotifications(ArrayList<String> notification) {
         Notifications.add(notification);
     }
-    public int getCert() {
+    public String getCert() {
         return Cert;
     }
     public Party getApplicant() { return Applicant; }
     public Party getInitiator() { return Initiator; }
 
-    public  ArrayList<ArrayList<String>> getNotifications() {        return Notifications;    }
+    public List<List<String>> getNotifications() {        return Notifications;    }
     public Boolean getStatus(){ return Status;}
 
 
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return ImmutableList.of(Applicant);
+        return ImmutableList.of(Applicant, Initiator);
 
     }
 

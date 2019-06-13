@@ -144,7 +144,8 @@ public  class CertificateState implements ContractState, QueryableState {
                     this.Client,
                     this.DocKYC,
                     this.Status,
-                    this.Maintien);
+                    this.Maintien,
+                    this.Initiator);
 
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");

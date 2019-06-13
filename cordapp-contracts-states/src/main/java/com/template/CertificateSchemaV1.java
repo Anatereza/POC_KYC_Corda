@@ -30,21 +30,24 @@ public class CertificateSchemaV1 extends MappedSchema {
     }
 
     @Entity
-    @Table(name = "document_states")
+    @Table(name = "certificate_states")
     public static class PersistentCertificate extends PersistentState {
         @Column(name = "certificate") private final String Cert;
         @Column(name = "client") private final String Client;
         @Column(name = "DocKYC") private final String DocKYC;
         @Column(name = "status") private final Integer Status;
         @Column(name = "maintenance") private final Integer Maintien;
+        @Column(name = "initiator") private final Party Initiator;
 
 
-        public PersistentCertificate(String cert, String client, String DocKYC, Integer status, Integer maintien) {
+
+        public PersistentCertificate(String cert, String client, String DocKYC, Integer status, Integer maintien, Party Initiator) {
             this.Client = client;
             this.DocKYC = DocKYC;
             this.Cert = cert;
             this.Status = status;
             this.Maintien = maintien;
+            this.Initiator = Initiator;
 
         }
 
@@ -55,6 +58,7 @@ public class CertificateSchemaV1 extends MappedSchema {
             this.Cert = null;
             this.Status = null;
             this.Maintien = null;
+            this.Initiator = null;
 
         }
 
@@ -77,6 +81,8 @@ public class CertificateSchemaV1 extends MappedSchema {
         public Integer getMaintien() {
             return Maintien;
         }
+
+        public Party getInitiator() { return Initiator;}
 
 
     }

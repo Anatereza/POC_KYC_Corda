@@ -10,6 +10,7 @@ package com.template;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
+import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.Builder;
@@ -70,12 +71,188 @@ public class TemplateApi {
 
     }
 
+    /// TEST API consulter mes certificats et certificats autres
+    @GET
+    @Path("getALLCertificats")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<CertificateState>> GetALLCertificats(@QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("maintien") int maintien, @QueryParam("mine") Boolean mine) throws NoSuchFieldException {
+        QueryCriteria generalCriteria1 = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
+        CriteriaExpression clientIndex = Builder.equal(client1, client);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+
+
+        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Status");
+        CriteriaExpression statusIndex = Builder.equal(status1, status);
+        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
+
+        Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Maintien");
+        CriteriaExpression maintienIndex = Builder.equal(maintien1, maintien);
+        QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
+
+        //CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        Party me = services.wellKnownPartyFromX500Name(myLegalName);
+
+        Field initiator1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Initiator");
+        if (mine){
+            CriteriaExpression initiatorIndex = Builder.equal(initiator1, me);
+            QueryCriteria initiatorCriteria = new QueryCriteria.VaultCustomQueryCriteria(initiatorIndex);
+            QueryCriteria generalCriteria = generalCriteria1.and(initiatorCriteria);
+
+            if(status == 0 && maintien == 0 && client == null) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
+
+            else if(status == 0 && maintien == 0 ) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
+
+            else if(maintien == 0) {
+                QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria);
+                return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            }
+            else if(status == 0) {
+                QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria);
+                return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            }
+
+            else {
+                QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria).and(statusCriteria);
+                return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();        }
+
+        } else {
+            CriteriaExpression initiatorIndex = Builder.notEqual(initiator1, me);
+            QueryCriteria initiatorCriteria = new QueryCriteria.VaultCustomQueryCriteria(initiatorIndex);
+            QueryCriteria generalCriteria = generalCriteria1.and(initiatorCriteria);
+
+            if(status == 0 && maintien == 0 && client == null) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
+
+            else if(status == 0 && maintien == 0 ) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
+
+            else if(maintien == 0) {
+                QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria);
+                return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            }
+            else if(status == 0) {
+                QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria);
+                return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+            }
+
+            else {
+                QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria).and(statusCriteria);
+                return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();        }
+        }
+
+
+    }
+
+
+    /// TEST API consulter mes certificats
+    @GET
+    @Path("getMesCertificats")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<CertificateState>> GetMesCertificats(@QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
+        QueryCriteria generalCriteria1 = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+        //CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        Party me = services.wellKnownPartyFromX500Name(myLegalName);
+
+
+        Field initiator1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Initiator");
+        CriteriaExpression initiatorIndex = Builder.equal(initiator1, me);
+        QueryCriteria initiatorCriteria = new QueryCriteria.VaultCustomQueryCriteria(initiatorIndex);
+        QueryCriteria generalCriteria = generalCriteria1.and(initiatorCriteria);
+
+        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
+        CriteriaExpression clientIndex = Builder.equal(client1, client);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+
+
+        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Status");
+        CriteriaExpression statusIndex = Builder.equal(status1, status);
+        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
+
+        Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Maintien");
+        CriteriaExpression maintienIndex = Builder.equal(maintien1, maintien);
+        QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
+
+        //QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria).and(maintienCriteria);
+
+        if(status == 0 && maintien == 0 && client == null) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
+
+        else if(status == 0 && maintien == 0 ) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
+
+        else if(maintien == 0) {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+        else if(status == 0) {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+
+        else {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria).and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();        }
+
+
+    }
+
+    /// TEST API consulter AUTRES certificats
+    @GET
+    @Path("getAutresCertificats")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<CertificateState>> GetAutresCertificats(@QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
+        QueryCriteria generalCriteria1 = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+        //CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        Party me = services.wellKnownPartyFromX500Name(myLegalName);
+
+
+        Field initiator1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Initiator");
+        //CriteriaExpression initiatorIndex = Builder.equal(initiator1, me);
+        CriteriaExpression initiatorIndex = Builder.notEqual(initiator1, me);
+        QueryCriteria initiatorCriteria = new QueryCriteria.VaultCustomQueryCriteria(initiatorIndex);
+        QueryCriteria generalCriteria = generalCriteria1.and(initiatorCriteria);
+
+        Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
+        CriteriaExpression clientIndex = Builder.equal(client1, client);
+        QueryCriteria clientCriteria = new QueryCriteria.VaultCustomQueryCriteria(clientIndex);
+
+
+        Field status1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Status");
+        CriteriaExpression statusIndex = Builder.equal(status1, status);
+        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
+
+        Field maintien1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Maintien");
+        CriteriaExpression maintienIndex = Builder.equal(maintien1, maintien);
+        QueryCriteria maintienCriteria = new QueryCriteria.VaultCustomQueryCriteria(maintienIndex);
+
+        //QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria).and(maintienCriteria);
+
+
+        if(status == 0 && maintien == 0 && client == null) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
+
+        else if(status == 0 && maintien == 0 ) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
+
+        else if(maintien == 0) {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+        else if(status == 0) {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
+        }
+
+        else {
+            QueryCriteria criteria = generalCriteria.and(clientCriteria).and(maintienCriteria).and(statusCriteria);
+            return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();        }
+
+
+    }
 
     /// API consulter certificat
     @GET
     @Path("getCertificat")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") int client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
+    public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
         QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
 
         Field client1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Client");
@@ -94,7 +271,7 @@ public class TemplateApi {
         //QueryCriteria criteria = generalCriteria.and(clientCriteria).and(statusCriteria).and(maintienCriteria);
 
 
-        if(status == 0 && maintien == 0 && client == 0) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
+        if(status == 0 && maintien == 0 && client == null) { return   services.vaultQueryByCriteria(generalCriteria,CertificateState.class).getStates(); }
 
         else if(status == 0 && maintien == 0 ) { return   services.vaultQueryByCriteria(generalCriteria.and(clientCriteria),CertificateState.class).getStates(); }
 
@@ -114,6 +291,8 @@ public class TemplateApi {
         //return   services.vaultQueryByCriteria(criteria,CertificateState.class).getStates();
 
     }
+
+
 
     /// API consulter docs sans client
     @GET
@@ -325,6 +504,63 @@ public class TemplateApi {
         return Response.status(CREATED).entity(msg).build();
 
 
+    }
+
+    @PUT
+    @Path("updateCertificate")
+    public Response updateCertificate(@QueryParam("cert") String cert, @QueryParam("status") int status, @QueryParam("profil") String profil, @QueryParam("date") String dateProchaineCert, @QueryParam("main") int maintenance) throws InterruptedException, ExecutionException {
+
+        if (!(status == 0)) {
+            Integer intStatus = new Integer(status);
+
+            final SignedTransaction signedTx = services
+                    .startTrackedFlowDynamic(StatusCertificateFlow.class, cert, intStatus)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+            return Response.status(CREATED).entity(msg).build();
+
+        }
+        else if (!(profil == null)){
+
+            final SignedTransaction signedTx = services
+                    .startTrackedFlowDynamic(ProfilCertificateFlow.class, cert, profil)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+            return Response.status(CREATED).entity(msg).build();
+        }
+
+        else if (!(dateProchaineCert == null)){
+
+            final SignedTransaction signedTx = services
+                    .startTrackedFlowDynamic(DateNextCertificateFlow.class, cert, dateProchaineCert)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+            return Response.status(CREATED).entity(msg).build();
+        }
+
+        else if (!(maintenance == 0)){
+            Integer intMaintenance = new Integer(maintenance);
+            final SignedTransaction signedTx = services
+                    .startTrackedFlowDynamic(MaintenanceCertificateFlow.class, cert, intMaintenance)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+            return Response.status(CREATED).entity(msg).build();
+        }
+
+        else {
+
+            final String msg = "Request not committed to ledger.";
+            return Response.status(CREATED).entity(msg).build();
+
+        }
     }
 
 

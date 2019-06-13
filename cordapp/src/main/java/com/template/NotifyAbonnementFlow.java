@@ -19,6 +19,7 @@ import net.corda.core.utilities.ProgressTracker;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -65,11 +66,9 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         // We create the transaction components.
         final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         String now = sdf.format(new Date());
+        List<String> notification = Arrays.asList(now,notif);
 
 
-        List<String> notification = null;
-        notification.add(notif);
-        notification.add(now);
 
 
         // update testing ***********
@@ -77,27 +76,19 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
         Field certificate1 = null;
         try {
-            certificate1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("certificate");
+            certificate1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Cert");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
         CriteriaExpression certificateIndex = Builder.equal(certificate1, cert);
         QueryCriteria certificateCriteria = new QueryCriteria.VaultCustomQueryCriteria(certificateIndex);
 
-        Party monabonnement = getOurIdentity();
-        Field identite = null;
-        try {
-            identite = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("applicant");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        CriteriaExpression idIndex = Builder.equal(identite, monabonnement);
-        QueryCriteria applicantCriteria = new QueryCriteria.VaultCustomQueryCriteria(idIndex);
+
 
         //chercher le statut de l'abonnement
         Field status1 = null;
         try {
-            status1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("status");
+            status1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Status");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -105,7 +96,9 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
 
 
-        QueryCriteria criteria = generalcriteria.and(certificateCriteria).and(applicantCriteria).and(statusCriteria);
+
+
+        QueryCriteria criteria = generalcriteria.and(certificateCriteria).and(statusCriteria);
 
 
         // *****
@@ -120,25 +113,31 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         List<List<String>> notifications = inputState.getState().getData().getNotifications();
         notifications.add(notification);
 
-        //retrieve Initiator from certificat
-        QueryCriteria.VaultQueryCriteria generalcriteria1 = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-        Field cert1 = null;
-        try {
-            cert1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Cert");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        CriteriaExpression certIndex = Builder.equal(cert1, cert);
-        QueryCriteria certCriteria = new QueryCriteria.VaultCustomQueryCriteria(certIndex);
-        QueryCriteria criteria1 = generalcriteria.and(certCriteria);
 
-        Vault.Page<CertificateState> result1 = getServiceHub().getVaultService().queryBy(CertificateState.class, criteria1);
-        StateAndRef<CertificateState> state = result1.getStates().get(0);
-        Party initiator = state.getState().getData().getInitiator();
-
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(),initiator, notifications, true);
-
+        Party initiator = inputState.getState().getData().getInitiator();
+        Party applicant = inputState.getState().getData().getApplicant();
+        AbonnementState outputState = new AbonnementState(cert,applicant ,initiator, notifications, true);
         // END of update testing
+
+
+        // second update
+
+        List<StateAndRef<AbonnementState>> inputStates = result.getStates();
+        AbonnementState outputState2 = null;
+        StateRef ourStateRef2;
+        StateAndRef ourStateAndRef2 = null;
+
+        if(inputStates.size() == 2) {
+            ourStateRef2 = new StateRef(inputStates.get(1).getRef().getTxhash(), 0);
+            ourStateAndRef2 = getServiceHub().toStateAndRef(ourStateRef2);
+            Party applicant2 = inputStates.get(1).getState().getData().getApplicant();
+            List<List<String>> notifications2 = inputStates.get(1).getState().getData().getNotifications();
+            notifications2.add(notification);
+            outputState2 = new AbonnementState(cert,applicant2 ,initiator, notifications2, true);
+
+        }
+
+
 
         CommandData cmdType = new TemplateContract.Commands.Action();
         Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
@@ -149,6 +148,11 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         txBuilder.addInputState(ourStateAndRef);
         txBuilder.addOutputState(outputState, TEMPLATE_CONTRACT_ID);
+
+        if(inputStates.size() == 2){
+            txBuilder.addInputState(ourStateAndRef2);
+            txBuilder.addOutputState(outputState2, TEMPLATE_CONTRACT_ID);
+        }
 
         txBuilder.addCommand(cmd);
 

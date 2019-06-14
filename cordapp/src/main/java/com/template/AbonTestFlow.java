@@ -1,14 +1,13 @@
 package com.template;
 
 import co.paralleluniverse.fibers.Suspendable;
+import net.corda.core.contracts.Command;
+import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.StateRef;
 import net.corda.core.flows.*;
-import net.corda.core.contracts.Command;
-import net.corda.core.contracts.CommandData;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
-import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.Builder;
 import net.corda.core.node.services.vault.CriteriaExpression;
@@ -18,13 +17,14 @@ import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
 import java.lang.reflect.Field;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
+
 /**
  * Define your flow here.
  */
@@ -32,6 +32,10 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @StartableByRPC
 public class AbonTestFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
+    private final String msg;
+
+
+
 
     /**
      * The progress tracker provides checkpoints indicating the progress of the flow to observers.
@@ -39,10 +43,9 @@ public class AbonTestFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public AbonTestFlow(String cert) {
-
+    public AbonTestFlow(String cert, String msg) {
         this.cert = cert;
-
+        this.msg = msg;
 
     }
 
@@ -60,68 +63,119 @@ public class AbonTestFlow extends FlowLogic<SignedTransaction> {
         // We retrieve the notary and nodes identity from the network map.
         final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
+        //TEST
         // We create the transaction components.
-        final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        String now = sdf.format(new Date());
+        //final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        //String now = sdf.format(new Date());
+        //List<String> notification = Arrays.asList(now,notif);
 
-////// retrieve Initiator from certificat
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("ddmmyyyyhhmmss");
+        String time = sdf2.format(new Date());
+
+
+
+        //List<List<String>> notifications = new ArrayList<List<String>>();
+
+        List<String> notification = new ArrayList<String>();
+        notification.add(time);
+        notification.add(msg);
+        //notifications.add(notification);
+
+
+
+        // update testing ***********
 
         QueryCriteria.VaultQueryCriteria generalcriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
-        Field cert1 = null;
+        Field certificate1 = null;
         try {
-            cert1 = CertificateSchemaV1.PersistentCertificate.class.getDeclaredField("Cert");
+            certificate1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Cert");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        CriteriaExpression certIndex = Builder.equal(cert1, cert);
-        QueryCriteria certCriteria = new QueryCriteria.VaultCustomQueryCriteria(certIndex);
-        QueryCriteria criteria = generalcriteria.and(certCriteria);
-
-        Vault.Page<CertificateState> result = getServiceHub().getVaultService().queryBy(CertificateState.class, criteria);
-        StateAndRef<CertificateState> state = result.getStates().get(0);
-        Party initiator = state.getState().getData().getInitiator();
+        CriteriaExpression certificateIndex = Builder.equal(certificate1, cert);
+        QueryCriteria certificateCriteria = new QueryCriteria.VaultCustomQueryCriteria(certificateIndex);
 
 
 
-///// end
-        List<List<String>> notifications = new ArrayList<List<String>>();
+        //chercher le statut de l'abonnement
+        /*
+        Field status1 = null;
+        try {
+            status1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Status");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        CriteriaExpression statusIndex = Builder.equal(status1, true);
+        QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
 
-        List<String> notification = new ArrayList<String>();
-        notification.add("notification");
-        notification.add("date");
+*/
+
+
+        QueryCriteria criteria = generalcriteria.and(certificateCriteria);
+        //   .and(statusCriteria);
+
+
+        // *****
+        Vault.Page<AbonnementState> result = getServiceHub().getVaultService().queryBy(AbonnementState.class, criteria);
+        StateAndRef<AbonnementState> inputState = result.getStates().get(0);
+
+        StateRef ourStateRef = new StateRef(inputState.getRef().getTxhash(),0);
+        StateAndRef ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
+
+        // test 2 inputs
+
+        // List<List<String>> notifications = inputState.getState().getData().getNotifications();
+        // notifications.add(notification);
+        //List<List<String>> notifications = new ArrayList<List<String>>();
+        //notifications.add(notification);
+
+        // test 2 inputs
+        List<List<String>> notifications = new ArrayList<List<String>>(inputState.getState().getData().getNotifications());
         notifications.add(notification);
 
 
+        Party initiator = inputState.getState().getData().getInitiator();
+        Party applicant = inputState.getState().getData().getApplicant();
+        AbonnementState outputState = new AbonnementState(cert,applicant ,initiator, notifications, false);
+        // END of update testing
 
-        //write the CSV back out to the console
-        for(List<String> csv : notifications)
-        {
-            //dumb logic to place the commas correctly
-            if(!csv.isEmpty())
-            {
-                System.out.print(csv.get(0));
-                for(int i=1; i < csv.size(); i++)
-                {
-                    System.out.print("," + csv.get(i));
-                }
-            }
-            System.out.print("\n");
+
+        // second update
+/*
+        List<StateAndRef<AbonnementState>> inputStates = result.getStates();
+        AbonnementState outputState2 = null;
+        StateRef ourStateRef2;
+        StateAndRef ourStateAndRef2 = null;
+
+        if(inputStates.size() == 2) {
+            ourStateRef2 = new StateRef(inputStates.get(1).getRef().getTxhash(), 0);
+            ourStateAndRef2 = getServiceHub().toStateAndRef(ourStateRef2);
+            Party applicant2 = inputStates.get(1).getState().getData().getApplicant();
+            List<List<String>> notifications2 = inputStates.get(1).getState().getData().getNotifications();
+            notifications2.add(notification);
+            outputState2 = new AbonnementState(cert,applicant2 ,initiator, notifications2, true);
+
         }
 
-
-
-
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, notifications, true);
-
+*/
 
         CommandData cmdType = new TemplateContract.Commands.Action();
         Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
 
         // We create a transaction builder and add the components.
 
-        final TransactionBuilder txBuilder = new TransactionBuilder(notary)
-                .addOutputState(outputState, TEMPLATE_CONTRACT_ID)
-                .addCommand(cmd);
+        final TransactionBuilder txBuilder = new TransactionBuilder(notary);
+
+        txBuilder.addInputState(ourStateAndRef);
+        txBuilder.addOutputState(outputState, TEMPLATE_CONTRACT_ID);
+/*
+        if(inputStates.size() == 2){
+            txBuilder.addInputState(ourStateAndRef2);
+            txBuilder.addOutputState(outputState2, TEMPLATE_CONTRACT_ID);
+        }
+*/
+        txBuilder.addCommand(cmd);
+
 
         // Signing the transaction.
         final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);
@@ -130,6 +184,9 @@ public class AbonTestFlow extends FlowLogic<SignedTransaction> {
         subFlow(new FinalityFlow(signedTx));
 
 
+
+
         return null;
     }
 }
+

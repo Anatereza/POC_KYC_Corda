@@ -112,7 +112,7 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
 
         QueryCriteria criteria = generalcriteria.and(certificateCriteria);
-             //   .and(statusCriteria);
+        //   .and(statusCriteria);
 
 
         // *****
@@ -124,9 +124,14 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         // test 2 inputs
 
-       // List<List<String>> notifications = inputState.getState().getData().getNotifications();
-       // notifications.add(notification);
-        List<List<String>> notifications = new ArrayList<List<String>>();
+        // List<List<String>> notifications = inputState.getState().getData().getNotifications();
+        // notifications.add(notification);
+        //List<List<String>> notifications = new ArrayList<List<String>>();
+        //notifications.add(notification);
+
+        // test 2 inputs
+        List<List<String>> notifications = new ArrayList<List<String>>(inputState.getState().getData().getNotifications());
+        notifications.add(notification);
 
 
         Party initiator = inputState.getState().getData().getInitiator();

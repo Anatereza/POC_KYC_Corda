@@ -32,7 +32,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @StartableByRPC
 public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
-    private final String notif;
+    private final String msg;
 
 
 
@@ -43,9 +43,9 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public NotifyAbonnementFlow(String cert, String notif) {
+    public NotifyAbonnementFlow(String cert, String msg) {
         this.cert = cert;
-        this.notif = notif;
+        this.msg = msg;
 
     }
 
@@ -78,7 +78,7 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         List<String> notification = new ArrayList<String>();
         notification.add(time);
-        notification.add(notif);
+        notification.add(msg);
         //notifications.add(notification);
 
 
@@ -98,6 +98,7 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
 
         //chercher le statut de l'abonnement
+        /*
         Field status1 = null;
         try {
             status1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Status");
@@ -107,10 +108,11 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         CriteriaExpression statusIndex = Builder.equal(status1, true);
         QueryCriteria statusCriteria = new QueryCriteria.VaultCustomQueryCriteria(statusIndex);
 
+*/
 
 
-
-        QueryCriteria criteria = generalcriteria.and(certificateCriteria).and(statusCriteria);
+        QueryCriteria criteria = generalcriteria.and(certificateCriteria);
+             //   .and(statusCriteria);
 
 
         // *****
@@ -122,18 +124,19 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         // test 2 inputs
 
-        List<List<String>> notifications = inputState.getState().getData().getNotifications();
-        notifications.add(notification);
+       // List<List<String>> notifications = inputState.getState().getData().getNotifications();
+       // notifications.add(notification);
+        List<List<String>> notifications = new ArrayList<List<String>>();
 
 
         Party initiator = inputState.getState().getData().getInitiator();
         Party applicant = inputState.getState().getData().getApplicant();
-        AbonnementState outputState = new AbonnementState(cert,applicant ,initiator, notifications, true);
+        AbonnementState outputState = new AbonnementState(cert,applicant ,initiator, notifications, false);
         // END of update testing
 
 
         // second update
-
+/*
         List<StateAndRef<AbonnementState>> inputStates = result.getStates();
         AbonnementState outputState2 = null;
         StateRef ourStateRef2;
@@ -149,7 +152,7 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         }
 
-
+*/
 
         CommandData cmdType = new TemplateContract.Commands.Action();
         Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
@@ -160,12 +163,12 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         txBuilder.addInputState(ourStateAndRef);
         txBuilder.addOutputState(outputState, TEMPLATE_CONTRACT_ID);
-
+/*
         if(inputStates.size() == 2){
             txBuilder.addInputState(ourStateAndRef2);
             txBuilder.addOutputState(outputState2, TEMPLATE_CONTRACT_ID);
         }
-
+*/
         txBuilder.addCommand(cmd);
 
 

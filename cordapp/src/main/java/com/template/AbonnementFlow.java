@@ -87,7 +87,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
 
         List<List<String>> notifications = new ArrayList<List<String>>();
 
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, notifications, true);
+        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, notifications);
 
 
         CommandData cmdType = new TemplateContract.Commands.Action();

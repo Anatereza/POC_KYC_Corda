@@ -39,9 +39,6 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 @StartableByRPC
 public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
-    private final Boolean status;
-
-
 
 
     /**
@@ -50,9 +47,8 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public UpdateAbonnementFlow(String cert, Boolean status) {
+    public UpdateAbonnementFlow(String cert) {
         this.cert = cert;
-        this.status = status;
 
     }
 
@@ -103,12 +99,7 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
         StateRef ourStateRef = new StateRef(inputState.getRef().getTxhash(),0);
         StateAndRef ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
 
-        // get output values
-        List<List<String>> notifications = inputState.getState().getData().getNotifications();
 
-        Party initiator = inputState.getState().getData().getInitiator();
-
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(),initiator, notifications, status);
 
         // END of update testing
 
@@ -120,8 +111,6 @@ public class UpdateAbonnementFlow extends FlowLogic<SignedTransaction> {
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);
 
         txBuilder.addInputState(ourStateAndRef);
-        txBuilder.addOutputState(outputState, TEMPLATE_CONTRACT_ID);
-
         txBuilder.addCommand(cmd);
 
 

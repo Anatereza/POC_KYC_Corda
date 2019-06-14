@@ -73,7 +73,7 @@ public class TemplateApi {
 
     /// TEST API consulter mes certificats et certificats autres
     @GET
-    @Path("getALLCertificats")
+    @Path("getCertificats")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StateAndRef<CertificateState>> GetALLCertificats(@QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("maintien") int maintien, @QueryParam("mine") Boolean mine) throws NoSuchFieldException {
         QueryCriteria generalCriteria1 = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
@@ -250,7 +250,7 @@ public class TemplateApi {
 
     /// API consulter certificat
     @GET
-    @Path("getCertificat")
+    @Path("getCertificat0")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StateAndRef<CertificateState>> GetCertificat(@QueryParam("client") String client, @QueryParam("status") int status, @QueryParam("maintien") int maintien) throws NoSuchFieldException {
         QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
@@ -437,16 +437,20 @@ public class TemplateApi {
     @PUT
     @Path("updateStatusCertificate")
     public Response updateStatusCertificate(@QueryParam("cert") String cert, @QueryParam("status") Integer status) throws InterruptedException, ExecutionException {
-        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
-        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
-
+        String notif = "Changement de statut sur le certificat";
 
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(StatusCertificateFlow.class, cert, status)
                 .getReturnValue()
                 .get();
 
-        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+        final SignedTransaction signedTx2 = services
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
         return Response.status(CREATED).entity(msg).build();
 
 
@@ -455,26 +459,27 @@ public class TemplateApi {
     @PUT
     @Path("updateProfilCertificate")
     public Response updateProfilCertificate(@QueryParam("cert") String cert, @QueryParam("profil") String profil) throws InterruptedException, ExecutionException {
-        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
-        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
-
+        String notif = "Changement de profil client";
 
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(ProfilCertificateFlow.class, cert, profil)
                 .getReturnValue()
                 .get();
 
-        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
-        return Response.status(CREATED).entity(msg).build();
+        final SignedTransaction signedTx2 = services
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .getReturnValue()
+                .get();
 
+        final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
+        return Response.status(CREATED).entity(msg).build();
 
     }
 
     @PUT
     @Path("updateDateNextCertificate")
     public Response updateDateNextCertificate(@QueryParam("cert") String cert, @QueryParam("date") String dateProchaineCert) throws InterruptedException, ExecutionException {
-        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
-        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+        String notif = "Chagement de date de prochaine certification";
 
 
         final SignedTransaction signedTx = services
@@ -482,7 +487,13 @@ public class TemplateApi {
                 .getReturnValue()
                 .get();
 
-        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+        final SignedTransaction signedTx2 = services
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
         return Response.status(CREATED).entity(msg).build();
 
 
@@ -491,8 +502,7 @@ public class TemplateApi {
     @PUT
     @Path("updateMaintenanceCertificate")
     public Response updateMaintenanceCertificate(@QueryParam("cert") String cert, @QueryParam("main") Integer maintenance) throws InterruptedException, ExecutionException {
-        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
-        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+        String notif = "Changement de maintien du certificat";
 
 
         final SignedTransaction signedTx = services
@@ -500,7 +510,13 @@ public class TemplateApi {
                 .getReturnValue()
                 .get();
 
-        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+        final SignedTransaction signedTx2 = services
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
         return Response.status(CREATED).entity(msg).build();
 
 
@@ -513,45 +529,77 @@ public class TemplateApi {
         if (!(status == 0)) {
             Integer intStatus = new Integer(status);
 
+            String notif ="Changement de statut";
+
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(StatusCertificateFlow.class, cert, intStatus)
                     .getReturnValue()
                     .get();
 
-            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+            final SignedTransaction signedTx2 = services
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
             return Response.status(CREATED).entity(msg).build();
 
         }
         else if (!(profil == null)){
+
+            String notif = "Changement de profil";
 
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(ProfilCertificateFlow.class, cert, profil)
                     .getReturnValue()
                     .get();
 
-            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+            final SignedTransaction signedTx2 = services
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
             return Response.status(CREATED).entity(msg).build();
         }
 
-        else if (!(dateProchaineCert == null)){
+        else if (!(dateProchaineCert == null)) {
+
+            String notif = "Changement de date de prochaine certification";
 
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(DateNextCertificateFlow.class, cert, dateProchaineCert)
                     .getReturnValue()
                     .get();
 
-            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+            final SignedTransaction signedTx2 = services
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
             return Response.status(CREATED).entity(msg).build();
         }
-
         else if (!(maintenance == 0)){
+            String notif = "Changement de maintien";
+
             Integer intMaintenance = new Integer(maintenance);
+
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(MaintenanceCertificateFlow.class, cert, intMaintenance)
                     .getReturnValue()
                     .get();
 
-            final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+
+            final SignedTransaction signedTx2 = services
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .getReturnValue()
+                    .get();
+
+            final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
             return Response.status(CREATED).entity(msg).build();
         }
 
@@ -561,6 +609,97 @@ public class TemplateApi {
             return Response.status(CREATED).entity(msg).build();
 
         }
+    }
+
+    //créer abonnement
+    @PUT
+    @Path("createAbonnement")
+    public Response createAbonnement(@QueryParam("cert") String cert) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(AbonnementFlow.class, cert)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+    //créer abonnement
+    @PUT
+    @Path("desabonner")
+    public Response desAbonnement(@QueryParam("cert") String cert) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(UpdateAbonnementFlow.class, cert)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+    //list d'abonnements
+    @GET
+    @Path("abonnements")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<AbonnementState>> GetAbonnement() throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+        return   services.vaultQueryByCriteria(generalCriteria,AbonnementState.class).getStates();
+    }
+
+    //API test : notifier les abonnés
+    @PUT
+    @Path("notifs")
+    public Response NotifyAbonnement(@QueryParam("cert") String cert, @QueryParam("notif") String notif) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s committed to ledger.\n", signedTx.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
+    }
+
+    //api test deux transactions
+    @PUT
+    @Path("updateANDNotifyMaintenanceCertificate")
+    public Response updateNotifyMaintenanceCertificate(@QueryParam("cert") String cert, @QueryParam("main") Integer maintenance) throws InterruptedException, ExecutionException {
+        // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
+
+        String notif = "changement de maintenance";
+
+        final SignedTransaction signedTx = services
+                .startTrackedFlowDynamic(MaintenanceCertificateFlow.class, cert, maintenance)
+                .getReturnValue()
+                .get();
+
+        final SignedTransaction signedTx2 = services
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .getReturnValue()
+                .get();
+
+        final String msg = String.format("Request id %s and %s committed to ledger.\n", signedTx.getId(), signedTx2.getId());
+        return Response.status(CREATED).entity(msg).build();
+
+
     }
 
 

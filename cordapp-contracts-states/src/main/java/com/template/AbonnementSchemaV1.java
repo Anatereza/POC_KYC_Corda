@@ -25,16 +25,16 @@ public class AbonnementSchemaV1 extends MappedSchema {
         @Column(name = "certificate") private final String Cert;
         @Column(name = "applicant") private final Party Applicant;
         @Column(name = "initiator") private final Party Initiator;
-        @Column(name = "status") private final boolean Status;
 
 
 
 
-        public PersistentAbonnement(String cert, Party applicant,Party Initiator, boolean status) {
+
+        public PersistentAbonnement(String cert, Party applicant,Party Initiator) {
             this.Cert = cert;
             this.Applicant = applicant;
             this.Initiator = Initiator;
-            this.Status = status;
+
         }
 
         // Default constructor required by hibernate.
@@ -42,7 +42,7 @@ public class AbonnementSchemaV1 extends MappedSchema {
             this.Cert = null;
             this.Applicant = null;
             this.Initiator = null;
-            this.Status = false;
+
         }
 
         public String getCert() {
@@ -56,10 +56,6 @@ public class AbonnementSchemaV1 extends MappedSchema {
             return Initiator;
         }
 
-
-        public boolean getStatus() {
-            return Status;
-        }
 
 
 

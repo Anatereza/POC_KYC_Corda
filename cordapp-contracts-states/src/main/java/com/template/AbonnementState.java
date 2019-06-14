@@ -19,20 +19,20 @@ public class AbonnementState implements ContractState, QueryableState {
     private  Party Applicant;
     private Party Initiator;
     private final List<List<String>> Notifications;
-    private final Boolean Status;
+
 
     /**
      * @param Cert the certiicate id
      * @param Applicant the applicant
      * @param Initiator the Initiator
      * @param Notifications the certificate notifications
-     * @param Status the abonnement status
+     *
      *
 
      */
 
 
-    public AbonnementState(String Cert, Party Applicant, Party Initiator,  List<List<String>> Notifications, Boolean Status) {
+    public AbonnementState(String Cert, Party Applicant, Party Initiator,  List<List<String>> Notifications) {
 
         this.Cert = Cert;
         //celui qui s'abonne
@@ -40,7 +40,7 @@ public class AbonnementState implements ContractState, QueryableState {
         //celui qui crée le certificat
         this.Initiator = Initiator;
         this.Notifications = Notifications;
-        this.Status = Status;
+
 
     }
 
@@ -55,8 +55,6 @@ public class AbonnementState implements ContractState, QueryableState {
     public Party getInitiator() { return Initiator; }
 
     public List<List<String>> getNotifications() {        return Notifications;    }
-    public Boolean getStatus(){ return Status;}
-
 
 
     @Override
@@ -78,8 +76,7 @@ public class AbonnementState implements ContractState, QueryableState {
             return new AbonnementSchemaV1.PersistentAbonnement(
                     this.Cert,
                     this.Applicant,
-                    this.Initiator,
-                    this.Status);
+                    this.Initiator);
 
         } else {
             throw new IllegalArgumentException("Unrecognised schema $schema");

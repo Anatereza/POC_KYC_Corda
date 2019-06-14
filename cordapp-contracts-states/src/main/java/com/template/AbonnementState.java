@@ -45,7 +45,7 @@ public class AbonnementState implements ContractState, QueryableState {
     }
 
 
-    public void setNotifications(ArrayList<String> notification) {
+    public void setNotifications(List<String> notification) {
         Notifications.add(notification);
     }
     public String getCert() {

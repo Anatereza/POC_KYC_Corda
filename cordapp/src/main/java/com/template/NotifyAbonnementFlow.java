@@ -63,11 +63,23 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
         // We retrieve the notary and nodes identity from the network map.
         final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
+        //TEST
         // We create the transaction components.
-        final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        String now = sdf.format(new Date());
-        List<String> notification = Arrays.asList(now,notif);
+        //final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        //String now = sdf.format(new Date());
+        //List<String> notification = Arrays.asList(now,notif);
 
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("ddmmyyyyhhmmss");
+        String time = sdf2.format(new Date());
+
+
+
+        //List<List<String>> notifications = new ArrayList<List<String>>();
+
+        List<String> notification = new ArrayList<String>();
+        notification.add(time);
+        notification.add(notif);
+        //notifications.add(notification);
 
 
 

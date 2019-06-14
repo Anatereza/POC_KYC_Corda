@@ -30,7 +30,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class AbonnementFlow extends FlowLogic<SignedTransaction> {
+public class AbonTestFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
 
     /**
@@ -39,7 +39,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public AbonnementFlow(String cert) {
+    public AbonTestFlow(String cert) {
 
         this.cert = cert;
 
@@ -84,8 +84,32 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
 
 
 ///// end
-
         List<List<String>> notifications = new ArrayList<List<String>>();
+
+        List<String> notification = new ArrayList<String>();
+        notification.add("notification");
+        notification.add("date");
+        notifications.add(notification);
+
+
+
+        //write the CSV back out to the console
+        for(List<String> csv : notifications)
+        {
+            //dumb logic to place the commas correctly
+            if(!csv.isEmpty())
+            {
+                System.out.print(csv.get(0));
+                for(int i=1; i < csv.size(); i++)
+                {
+                    System.out.print("," + csv.get(i));
+                }
+            }
+            System.out.print("\n");
+        }
+
+
+
 
         AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, notifications, true);
 

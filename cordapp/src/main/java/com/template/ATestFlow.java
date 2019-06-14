@@ -30,7 +30,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
  */
 @InitiatingFlow
 @StartableByRPC
-public class AbonnementFlow extends FlowLogic<SignedTransaction> {
+public class ATestFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
 
     /**
@@ -39,7 +39,7 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public AbonnementFlow(String cert) {
+    public ATestFlow(String cert) {
 
         this.cert = cert;
 
@@ -85,9 +85,9 @@ public class AbonnementFlow extends FlowLogic<SignedTransaction> {
 
 ///// end
 
-        List<List<String>> notifications = new ArrayList<List<String>>();
+        //List<List<String>> notifications = new ArrayList<List<String>>();
 
-        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, notifications, true);
+        AbonnementState outputState = new AbonnementState(cert, getOurIdentity(), initiator, null, true);
 
 
         CommandData cmdType = new TemplateContract.Commands.Action();

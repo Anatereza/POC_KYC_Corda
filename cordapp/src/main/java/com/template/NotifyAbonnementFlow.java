@@ -65,17 +65,21 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         //TEST
         // We create the transaction components.
-        //final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         //String now = sdf.format(new Date());
         //List<String> notification = Arrays.asList(now,notif);
 
-        final SimpleDateFormat sdf2 = new SimpleDateFormat("ddmmyyyyhhmmss");
+        //final SimpleDateFormat sdf2 = new SimpleDateFormat("ddmmyyyyhhmmss");
         String time = sdf2.format(new Date());
 
 
         List<String> notification = new ArrayList<String>();
         notification.add(time);
         notification.add(msg);
+
+        //List<List<String>> notifications = new ArrayList<List<String>>();
+
+        //notifications.add(notification);
 
         // update testing ***********
 
@@ -91,71 +95,57 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
 
         QueryCriteria criteria = generalcriteria.and(certificateCriteria);
-        //   .and(statusCriteria);
-
 
         // *****
         Vault.Page<AbonnementState> result = getServiceHub().getVaultService().queryBy(AbonnementState.class, criteria);
-        StateAndRef<AbonnementState> inputState = result.getStates().get(0);
 
-        StateRef ourStateRef = new StateRef(inputState.getRef().getTxhash(),0);
-        StateAndRef ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
+        StateAndRef<AbonnementState> inputState;
+        StateRef ourStateRef;
+        StateAndRef ourStateAndRef;
 
-
-        // test 2 inputs
-
-        //test PB 17/06
-        //List<List<String>> notifications = new ArrayList<List<String>>(inputState.getState().getData().getNotifications());
-        List<List<String>> notifications = new ArrayList<List<String>>();
-        notifications.add(notification);
-
-
-        Party initiator = inputState.getState().getData().getInitiator();
-        Party applicant = inputState.getState().getData().getApplicant();
-        AbonnementState outputState = new AbonnementState(cert,applicant ,initiator, notifications);
-        // END of update testing
-
-
-        CommandData cmdType = new TemplateContract.Commands.Action();
-        Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
+        Party initiator;
+        Party applicant;
+        AbonnementState outputState;
 
         // We create a transaction builder and add the components.
 
         final TransactionBuilder txBuilder = new TransactionBuilder(notary);
 
-        txBuilder.addInputState(ourStateAndRef);
-        txBuilder.addOutputState(outputState, TEMPLATE_CONTRACT_ID);
+        int index1;
+        List<List<String>> notifications;
+
+        for (int i=0 ;  i < result.getStates().size(); i++) {
+            inputState = result.getStates().get(i);
+            index1 = inputState.getRef().getIndex();
+            ourStateRef = new StateRef(inputState.getRef().getTxhash(),index1);
+            ourStateAndRef = getServiceHub().toStateAndRef(ourStateRef);
+
+            notifications = new ArrayList<List<String>>(inputState.getState().getData().getNotifications());
+            notifications.add(notification);
+
+            initiator = inputState.getState().getData().getInitiator();
+            applicant = inputState.getState().getData().getApplicant();
+            outputState = new AbonnementState(cert,applicant ,initiator, notifications);
+
+            txBuilder.addInputState(ourStateAndRef);
+            txBuilder.addOutputState(outputState, TEMPLATE_CONTRACT_ID);
+
+            //List<List<String>> notifications2 = new ArrayList<List<String>>(inputStates.get(1).getState().getData().getNotifications());
+            //notifications2.add(notification);
+
+        }
+
+        CommandData cmdType = new TemplateContract.Commands.Action();
+        Command cmd = new Command<>(cmdType, getOurIdentity().getOwningKey());
 
 
         txBuilder.addCommand(cmd);
-
-        // second update
-
-        List<StateAndRef<AbonnementState>> inputStates = result.getStates();
-        AbonnementState outputState2 = null;
-        StateRef ourStateRef2;
-        StateAndRef ourStateAndRef2 = null;
-
-        if(inputStates.size() == 2) {
-            ourStateRef2 = new StateRef(inputStates.get(1).getRef().getTxhash(), 0);
-            ourStateAndRef2 = getServiceHub().toStateAndRef(ourStateRef2);
-            Party applicant2 = inputStates.get(1).getState().getData().getApplicant();
-            //List<List<String>> notifications2 = new ArrayList<List<String>>(inputStates.get(1).getState().getData().getNotifications());
-            //notifications2.add(notification);
-            outputState2 = new AbonnementState(cert,applicant2 ,initiator, notifications);
-
-            txBuilder.addInputState(ourStateAndRef2);
-            txBuilder.addOutputState(outputState2, TEMPLATE_CONTRACT_ID);
-
-        }
 
         // Signing the transaction.
         final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);
 
         // Finalising the transaction.
         subFlow(new FinalityFlow(signedTx));
-
-
 
 
         return null;

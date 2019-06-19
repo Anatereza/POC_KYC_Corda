@@ -350,11 +350,33 @@ public class TemplateApi {
     }
 
 
-    // api dowload doc sur le node et en local dans Dowloads
+
+    // api dowload doc sur le node et en local dans Downloads
     @PUT
     @Path("downDoc")
-    public Response downDoc(@QueryParam("filepath") String filePath, @QueryParam("nomdoc") String nomdoc) throws InterruptedException, ExecutionException, IOException {
-        SecureHash h = SecureHash.parse(filePath);
+    public Response downDoc(@QueryParam("hash") String hash, @QueryParam("nomdoc") String nomdoc) throws InterruptedException, ExecutionException, IOException {
+
+        CordaX500Name OtherX1 = CordaX500Name.parse("O=Caisse Epargne,L=Paris,C=FR");
+        CordaX500Name OtherX2 = CordaX500Name.parse("O=Natixis Assurance,L=Paris,C=FR");
+        CordaX500Name OtherX3 = CordaX500Name.parse("O=BPCE Assurance,L=Paris,C=FR");
+
+        String downpath = "C:\\DossierKYC\\Fail";
+
+        if(myLegalName.equals(OtherX1)){
+            //
+            downpath = "C:\\DossierKYC\\CE";
+        }
+
+        else if(myLegalName.equals(OtherX2)){
+            //
+            downpath = "C:\\DossierKYC\\Natixis";
+        }
+
+        else if (myLegalName.equals(OtherX3)){
+            downpath = "C:\\DossierKYC\\BPCE";
+        }
+
+        SecureHash h = SecureHash.parse(hash);
 
         System.out.println("File hash" + h);
 
@@ -388,7 +410,7 @@ public class TemplateApi {
             command[1] = "/c";
             command[2] = "copy";
             command[3] = nomdoc;
-            command[4] = "C:\\Users\\anatereza.mascarenha\\Downloads";
+            command[4] = downpath;
             Runtime.getRuntime().exec (command);
 
 
@@ -412,6 +434,7 @@ public class TemplateApi {
         return Response.status(CREATED).entity(msg).build();
 
     }
+
 
 
     // api créer document KYC

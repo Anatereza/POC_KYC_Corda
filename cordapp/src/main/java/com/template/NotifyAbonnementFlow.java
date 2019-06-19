@@ -33,6 +33,7 @@ import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final String cert;
     private final String msg;
+    private final String sev;
 
 
 
@@ -43,9 +44,10 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
     private final ProgressTracker progressTracker = new ProgressTracker();
 
 
-    public NotifyAbonnementFlow(String cert, String msg) {
+    public NotifyAbonnementFlow(String cert, String msg, String sev) {
         this.cert = cert;
         this.msg = msg;
+        this.sev = sev;
 
     }
 
@@ -75,7 +77,9 @@ public class NotifyAbonnementFlow extends FlowLogic<SignedTransaction> {
 
         List<String> notification = new ArrayList<String>();
         notification.add(time);
+        notification.add(cert);
         notification.add(msg);
+        notification.add(sev);
 
         //List<List<String>> notifications = new ArrayList<List<String>>();
 

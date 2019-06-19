@@ -1,5 +1,6 @@
 package com.template;
 
+
 import net.corda.client.rpc.CordaRPCClient;
 import net.corda.client.rpc.CordaRPCClientConfiguration;
 import net.corda.core.contracts.StateAndRef;
@@ -45,5 +46,8 @@ public class TemplateClient {
         // Log the existing RequestStates and listen for new ones.
         snapshot.getStates().forEach(TemplateClient::logState);
         updates.toBlocking().subscribe(update -> update.getProduced().forEach(TemplateClient::logState));
+
+
+
     }
 }

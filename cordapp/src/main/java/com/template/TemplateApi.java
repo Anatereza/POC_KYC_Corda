@@ -7,7 +7,9 @@ public class TestAPIAna {
 
 package com.template;
 
+
 import net.corda.core.contracts.StateAndRef;
+import net.corda.core.contracts.StateRef;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
@@ -17,15 +19,20 @@ import net.corda.core.node.services.vault.Builder;
 import net.corda.core.node.services.vault.CriteriaExpression;
 import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
+import net.corda.core.transactions.TransactionBuilder;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import static com.template.TemplateContract.TEMPLATE_CONTRACT_ID;
 import static javax.ws.rs.core.Response.Status.CREATED;
 
 
@@ -42,10 +49,10 @@ public class TemplateApi {
     private final CordaX500Name myLegalName;
 
 
-    public TemplateApi(CordaRPCOps services) {
+
+    public TemplateApi(CordaRPCOps services ) {
         this.services = services;
         this.myLegalName = services.nodeInfo().getLegalIdentities().get(0).getName();
-
     }
 
     /**
@@ -438,6 +445,7 @@ public class TemplateApi {
     @Path("updateStatusCertificate")
     public Response updateStatusCertificate(@QueryParam("cert") String cert, @QueryParam("status") Integer status) throws InterruptedException, ExecutionException {
         String notif = "Changement de statut sur le certificat";
+        String sev = "1";
 
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(StatusCertificateFlow.class, cert, status)
@@ -446,7 +454,7 @@ public class TemplateApi {
 
 
         final SignedTransaction signedTx2 = services
-                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                 .getReturnValue()
                 .get();
 
@@ -460,14 +468,14 @@ public class TemplateApi {
     @Path("updateProfilCertificate")
     public Response updateProfilCertificate(@QueryParam("cert") String cert, @QueryParam("profil") String profil) throws InterruptedException, ExecutionException {
         String notif = "Changement de profil client";
-
+        String sev = "3";
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(ProfilCertificateFlow.class, cert, profil)
                 .getReturnValue()
                 .get();
 
         final SignedTransaction signedTx2 = services
-                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                 .getReturnValue()
                 .get();
 
@@ -480,7 +488,7 @@ public class TemplateApi {
     @Path("updateDateNextCertificate")
     public Response updateDateNextCertificate(@QueryParam("cert") String cert, @QueryParam("date") String dateProchaineCert) throws InterruptedException, ExecutionException {
         String notif = "Chagement de date de prochaine certification";
-
+        String sev = "2";
 
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(DateNextCertificateFlow.class, cert, dateProchaineCert)
@@ -489,7 +497,7 @@ public class TemplateApi {
 
 
         final SignedTransaction signedTx2 = services
-                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                 .getReturnValue()
                 .get();
 
@@ -503,7 +511,7 @@ public class TemplateApi {
     @Path("updateMaintenanceCertificate")
     public Response updateMaintenanceCertificate(@QueryParam("cert") String cert, @QueryParam("main") Integer maintenance) throws InterruptedException, ExecutionException {
         String notif = "Changement de maintien du certificat";
-
+        String sev = "1";
 
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(MaintenanceCertificateFlow.class, cert, maintenance)
@@ -512,7 +520,7 @@ public class TemplateApi {
 
 
         final SignedTransaction signedTx2 = services
-                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                 .getReturnValue()
                 .get();
 
@@ -530,6 +538,7 @@ public class TemplateApi {
             Integer intStatus = new Integer(status);
 
             String notif ="Changement de statut";
+            String sev = "4";
 
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(StatusCertificateFlow.class, cert, intStatus)
@@ -538,7 +547,7 @@ public class TemplateApi {
 
 
             final SignedTransaction signedTx2 = services
-                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                     .getReturnValue()
                     .get();
 
@@ -549,6 +558,7 @@ public class TemplateApi {
         else if (!(profil == null)){
 
             String notif = "Changement de profil";
+            String sev = "3";
 
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(ProfilCertificateFlow.class, cert, profil)
@@ -557,7 +567,7 @@ public class TemplateApi {
 
 
             final SignedTransaction signedTx2 = services
-                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                     .getReturnValue()
                     .get();
 
@@ -568,6 +578,7 @@ public class TemplateApi {
         else if (!(dateProchaineCert == null)) {
 
             String notif = "Changement de date de prochaine certification";
+            String sev = "2";
 
             final SignedTransaction signedTx = services
                     .startTrackedFlowDynamic(DateNextCertificateFlow.class, cert, dateProchaineCert)
@@ -576,7 +587,7 @@ public class TemplateApi {
 
 
             final SignedTransaction signedTx2 = services
-                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                     .getReturnValue()
                     .get();
 
@@ -585,6 +596,7 @@ public class TemplateApi {
         }
         else if (!(maintenance == 0)){
             String notif = "Changement de maintien";
+            String sev = "1";
 
             Integer intMaintenance = new Integer(maintenance);
 
@@ -595,7 +607,7 @@ public class TemplateApi {
 
 
             final SignedTransaction signedTx2 = services
-                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                    .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                     .getReturnValue()
                     .get();
 
@@ -658,16 +670,37 @@ public class TemplateApi {
         return   services.vaultQueryByCriteria(generalCriteria,AbonnementState.class).getStates();
     }
 
+
+    //list d'abonnements
+    @GET
+    @Path("MesAbonnements")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StateAndRef<AbonnementState>> GetMesAbonnements() throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+        //CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        Party me = services.wellKnownPartyFromX500Name(myLegalName);
+
+
+        Field applicant1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Applicant");
+        CriteriaExpression applicantIndex = Builder.equal(applicant1, me);
+        QueryCriteria applicantCriteria = new QueryCriteria.VaultCustomQueryCriteria(applicantIndex);
+
+        return   services.vaultQueryByCriteria(generalCriteria.and(applicantCriteria),AbonnementState.class).getStates();
+    }
+
+
+
     //API test : notifier les abonnés
     @PUT
     @Path("notifs")
-    public Response NotifyAbonnement(@QueryParam("cert") String cert, @QueryParam("notif") String notif) throws InterruptedException, ExecutionException {
+    public Response NotifyAbonnement(@QueryParam("cert") String cert, @QueryParam("notif") String notif, @QueryParam("sev") String sev) throws InterruptedException, ExecutionException {
         // CordaX500Name OtherX1 = CordaX500Name.parse(other1);
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
 
         final SignedTransaction signedTx = services
-                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                 .getReturnValue()
                 .get();
 
@@ -685,6 +718,7 @@ public class TemplateApi {
         //Party OtherXX1 = services.wellKnownPartyFromX500Name(OtherX1);
 
         String notif = "changement de maintenance";
+        String sev = "1";
 
         final SignedTransaction signedTx = services
                 .startTrackedFlowDynamic(MaintenanceCertificateFlow.class, cert, maintenance)
@@ -692,7 +726,7 @@ public class TemplateApi {
                 .get();
 
         final SignedTransaction signedTx2 = services
-                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif)
+                .startTrackedFlowDynamic(NotifyAbonnementFlow.class, cert, notif, sev)
                 .getReturnValue()
                 .get();
 
@@ -700,9 +734,77 @@ public class TemplateApi {
         return Response.status(CREATED).entity(msg).build();
 
 
+
+    }
+
+    //list d'abonnements
+    @GET
+    @Path("abonnementsNotif")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<List<String>> GetAbonnementNotif() throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+        //List *
+
+        //CordaX500Name OtherX1 = CordaX500Name.parse(other1);
+        Party me = services.wellKnownPartyFromX500Name(myLegalName);
+
+
+        Field applicant1 = AbonnementSchemaV1.PersistentAbonnement.class.getDeclaredField("Applicant");
+        CriteriaExpression applicantIndex = Builder.equal(applicant1, me);
+        QueryCriteria applicantCriteria = new QueryCriteria.VaultCustomQueryCriteria(applicantIndex);
+
+        List<StateAndRef<AbonnementState>> inputStates;
+        inputStates = services.vaultQueryByCriteria(generalCriteria.and(applicantCriteria),AbonnementState.class).getStates();
+
+        StateAndRef<AbonnementState> inputState;
+
+        //List<String> notification = new ArrayList<String>();
+        //notification.add("time");
+        //notification.add("msg");
+
+
+        List<List<String>> notifications;
+        List<List<String>> notifications2 = new ArrayList<List<String>>();
+
+
+        for (int i=0 ;  i < inputStates.size(); i++) {
+            inputState = inputStates.get(i);
+
+            notifications = new ArrayList<List<String>>(inputState.getState().getData().getNotifications());
+            notifications2.addAll(notifications);
+
+        }
+
+        return   notifications2;
     }
 
 
+    //list d'abonnements
+    @GET
+    @Path("abonnementsNotif2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<List<String>> GetAbonnementNotif2() throws NoSuchFieldException {
+        QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
+
+
+
+        List<StateAndRef<AbonnementState>> inputStates;
+        inputStates = services.vaultQueryByCriteria(generalCriteria,AbonnementState.class).getStates();
+
+        StateAndRef<AbonnementState> inputState;
+
+
+        List<List<String>> notifications;
+        //List<List<String>> notifications2 = new ArrayList<List<String>>();
+
+
+        inputState = inputStates.get(0);
+
+        notifications = new ArrayList<List<String>>(inputState.getState().getData().getNotifications());
+
+
+        return   notifications;
+    }
 
 
 

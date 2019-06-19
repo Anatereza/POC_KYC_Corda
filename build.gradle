@@ -78,6 +78,9 @@ dependencies {
     cordapp project(":cordapp")
     cordapp project(":cordapp-contracts-states")
     cordapp "$corda_release_group:corda-finance:$corda_release_version"
+    
+    //google database
+    //implementation 'com.google.firebase:firebase-admin:6.8.1'
 }
 
 task integrationTest(type: Test, dependsOn: []) {

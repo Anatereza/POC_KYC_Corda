@@ -314,7 +314,7 @@ public class TemplateApi {
     @GET
     @Path("dossier")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<StateAndRef<DocumentState>> GetFolder(@QueryParam("client") Integer client) throws NoSuchFieldException {
+    public List<StateAndRef<DocumentState>> GetFolder(@QueryParam("client") String client) throws NoSuchFieldException {
         QueryCriteria generalCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
         Field client1 = DocumentSchemaV1.PersistentDocument.class.getDeclaredField("Client");
         CriteriaExpression clientIndex = Builder.equal(client1, client);
